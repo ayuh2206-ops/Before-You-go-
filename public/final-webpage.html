@@ -57,7 +57,12 @@
     </script>
     <!-- Custom Styles -->
     <style>
-        .gradient-text { background: linear-gradient(to right, #14B8A6, #F97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .gradient-text { 
+    background: linear-gradient(to right, #14B8A6, #F97316); 
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
         .btn-gradient { background: linear-gradient(to right, #F97316, #EA580C); transition: all 0.5s; background-size: 200% auto; }
         .btn-gradient:hover { background-position: right center; }
         .hero-background { background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.4)), url('https://images.pexels.com/photos/3278215/pexels-photo-3278215.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'); background-size: cover; background-position: center; }
