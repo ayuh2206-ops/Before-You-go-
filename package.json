@@ -1,0 +1,12 @@
+{
+  "name": "before-you-go",
+  "version": "1.0.0",
+  "description": "AI-powered travel assistant (Vercel deployment)",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'Build complete'",
+    "deploy": "vercel --prod"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

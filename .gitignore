@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+
+# Local configs and secrets
+config/api-keys.js
+.env
+.env.*
+
+# System/editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Build outputs
+/dist/
+/build/
+

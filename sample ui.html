@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Before You Go - AI Travel Planner</title>
+    <!-- Fonts -->
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Archived - sample ui.html</title>
+    </head>
+    <body>
+        <p>This file has been archived and the full UI is now served from <code>/public/index.html</code>.</p>
+        <p>See <code>archive/sample ui.html</code> for the archived placeholder.</p>
+    </body>
+</html>
+</head>
+<body class="bg-brand-light text-brand-dark font-sans">
+    
+    <!-- Header -->
+    <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="text-2xl font-heading font-bold text-brand-primary flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
+                Before You Go
+            </a>
+            <nav class="hidden md:flex items-center space-x-8 font-medium">
+                <a href="#features" class="text-gray-600 hover:text-brand-primary transition duration-300">Features</a>
+                <a href="#how-it-works" class="text-gray-600 hover:text-brand-primary transition duration-300">Process</a>
+                <a href="#inspiration" class="text-gray-600 hover:text-brand-primary transition duration-300">Inspiration</a>
+                <button data-modal-trigger="quiz-modal" class="bg-brand-accent text-white px-6 py-2.5 rounded-full font-semibold hover:bg-brand-accent-hover transition-all duration-300 shadow-md transform hover:scale-105">Find Your Trip</button>
+            </nav>
+            <button id="mobile-menu-btn" class="md:hidden text-gray-600"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg></button>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden px-6 pb-4">
+             <a href="#features" class="block py-2 text-gray-600 hover:text-brand-primary">Features</a>
+             <a href="#how-it-works" class="block py-2 text-gray-600 hover:text-brand-primary">Process</a>
+             <a href="#inspiration" class="block py-2 text-gray-600 hover:text-brand-primary">Inspiration</a>
+             <button data-modal-trigger="quiz-modal" class="block w-full text-center mt-2 bg-brand-accent text-white px-4 py-2 rounded-full font-semibold hover:bg-brand-accent-hover">Find Your Trip</button>
+        </div>
+    </header>
+
+    <main>
+        <!-- Sections of the landing page -->
+        <section class="hero-background text-white min-h-[60vh] flex items-center">
+            <div class="container mx-auto px-6 text-center">
+                <h1 class="font-heading text-4xl md:text-6xl font-extrabold leading-tight mb-4">Your Journey, Perfectly Imagined.</h1>
+                <p class="text-lg md:text-xl text-gray-200 max-w-3xl mx-auto mb-8">Unleash your inner explorer. We use AI to translate your personality into unforgettable travel experiences.</p>
+                <div>
+                    <button data-modal-trigger="quiz-modal" class="btn-gradient text-white px-8 py-4 rounded-full text-lg font-bold transition-all duration-500 shadow-lg transform hover:scale-105">Discover Your Travel DNA</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- How it Works Section -->
+        <section id="how-it-works" class="py-24 overlap-section">
+            <div class="container mx-auto px-6">
+                <div class="bg-white shadow-xl rounded-4xl p-8 md:p-16">
+                    <div class="text-center mb-16">
+                        <h2 class="font-heading text-4xl font-bold text-brand-dark">Crafting Your <span class="gradient-text">Unforgettable Journey</span></h2>
+                        <p class="text-lg text-gray-600 mt-4">A simple, inspiring process to design the trip of your dreams.</p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                       <!-- Step 1 -->
+                        <button data-modal-trigger="quiz-modal" class="group flex flex-col items-center card-hover bg-gray-50 p-8 rounded-3xl text-left">
+                            <div class="h-20 w-20 flex items-center justify-center mb-6"><svg class="h-16 w-16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke="#14B8A6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 14h.01M12 18h.01M16 14h.01M16 18h.01" stroke="#F97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                            <h3 class="font-heading text-2xl font-semibold text-brand-dark mb-3">1. Reveal Your Persona</h3>
+                            <p class="text-gray-600">Our psychology-backed quiz translates your unique traits into a clear Travel DNA profile.</p>
+                        </button>
+                        <!-- Step 2 -->
+                        <button data-modal-trigger="explore-modal" class="group flex flex-col items-center card-hover bg-gray-50 p-8 rounded-3xl text-left">
+                            <div class="h-20 w-20 flex items-center justify-center mb-6"><svg class="h-16 w-16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke="#14B8A6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="11" r="3" stroke="#F97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                            <h3 class="font-heading text-2xl font-semibold text-brand-dark mb-3">2. Explore Possibilities</h3>
+                            <p class="text-gray-600">Our AI predicts destinations you'll love, uncovering hidden gems and authentic experiences.</p>
+                        </button>
+                        <!-- Step 3 -->
+                        <button data-modal-trigger="journey-modal" class="group flex flex-col items-center card-hover bg-gray-50 p-8 rounded-3xl text-left">
+                            <div class="h-20 w-20 flex items-center justify-center mb-6"><svg class="h-16 w-16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 18h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" stroke="#14B8A6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="8" r="1" fill="#F97316"/></svg></div>
+                            <h3 class="font-heading text-2xl font-semibold text-brand-dark mb-3">3. Journey Seamlessly</h3>
+                            <p class="text-gray-600">Receive a live itinerary that adapts to your mood and the world around you, in real time.</p>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Other sections like Features, Inspiration, CTA -->
+        <section id="features" class="py-24 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="font-heading text-4xl font-bold text-brand-dark">A Smarter Way to <span class="gradient-text">Explore</span></h2>
+                    <p class="text-lg text-gray-600 mt-4">Every detail, personalized for you.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                     <!-- Feature Cards -->
+                    <div class="bg-brand-light p-8 rounded-2xl card-hover">
+                        <h3 class="font-heading text-xl font-bold text-brand-dark mb-2">AI Predictive Recommendations</h3>
+                        <p class="text-gray-600">Our engine analyzes your Travel DNA to suggest destinations you’re statistically destined to love.</p>
+                    </div>
+                    <div class="bg-brand-light p-8 rounded-2xl card-hover">
+                        <h3 class="font-heading text-xl font-bold text-brand-dark mb-2">Mood-Based Plans</h3>
+                        <p class="text-gray-600">Feeling adventurous or calm? Instantly get an itinerary that matches your current vibe.</p>
+                    </div>
+                    <div class="bg-brand-light p-8 rounded-2xl card-hover">
+                        <h3 class="font-heading text-xl font-bold text-brand-dark mb-2">Social Sync Planning</h3>
+                        <p class="text-gray-600">Plan group trips without the headache. Our AI merges multiple personalities into one perfect plan.</p>
+                    </div>
+                    <div class="bg-brand-light p-8 rounded-2xl card-hover">
+                        <h3 class="font-heading text-xl font-bold text-brand-dark mb-2">Hidden Gems Engine ✨</h3>
+                        <p class="text-gray-600">Discover authentic, lesser-known experiences and explore destinations like a local.</p>
+                    </div>
+                    <div class="bg-brand-light p-8 rounded-2xl card-hover">
+                        <h3 class="font-heading text-xl font-bold text-brand-dark mb-2">Dynamic Live Itinerary ✨</h3>
+                        <p class="text-gray-600">Your plans adapt in real-time to weather, delays, or spontaneous opportunities nearby.</p>
+                    </div>
+                    <div class="bg-brand-light p-8 rounded-2xl card-hover">
+                        <h3 class="font-heading text-xl font-bold text-brand-dark mb-2">AI Travel Buddy ✨</h3>
+                        <p class="text-gray-600">A conversational assistant that knows your itinerary and provides tips, translations, and guidance.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="inspiration" class="py-24 textured-section">
+            <div class="container mx-auto px-6">
+                 <div class="text-center mb-16">
+                    <h2 class="font-heading text-4xl font-bold text-gray-800">Find Your <span class="gradient-text">Inspiration</span></h2>
+                    <p id="inspiration-subtitle" class="text-lg text-gray-600 mt-4">First, take the quiz to reveal your travel persona and unlock personalized suggestions!</p>
+                </div>
+                <div id="inspiration-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Default State: A mix of personas -->
+                    <div class="relative rounded-2xl shadow-lg overflow-hidden h-96 group card-hover">
+                        <img src="https://images.pexels.com/photos/1562/italian-landscape-mountains-nature.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="Mountain landscape for explorers">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
+                            <h3 class="text-white text-2xl font-heading font-bold">The Explorer</h3>
+                        </div>
+                    </div>
+                    <div class="relative rounded-2xl shadow-lg overflow-hidden h-96 group card-hover">
+                        <img src="https://images.pexels.com/photos/1450360/pexels-photo-1450360.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="Serene beach for soul seekers">
+                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
+                            <h3 class="text-white text-2xl font-heading font-bold">The Soul Seeker</h3>
+                        </div>
+                    </div>
+                    <div class="relative rounded-2xl shadow-lg overflow-hidden h-96 group card-hover">
+                        <img src="https://images.pexels.com/photos/210307/pexels-photo-210307.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="Cultural market for story collectors">
+                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
+                            <h3 class="text-white text-2xl font-heading font-bold">The Story Collector</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-brand-dark">
+            <div class="container mx-auto px-6 py-20 text-center">
+                <h2 class="font-heading text-4xl font-bold text-white mb-4">Ready for a New Way to Travel?</h2>
+                <p class="text-gray-300 max-w-2xl mx-auto mb-8">Let's build a journey that feels like it was made just for you. Because it was.</p>
+                <div>
+                    <button data-modal-trigger="quiz-modal" class="btn-gradient text-white px-8 py-4 rounded-full text-lg font-bold transition-all duration-500 shadow-lg transform hover:scale-105">Get Started For Free</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer id="about" class="bg-gray-800 text-white">
+        <div class="container mx-auto px-6 py-12">
+            <div class="grid md:grid-cols-3 gap-8 text-center md:text-left">
+                <!-- Footer content with links for modals -->
+                <div>
+                    <h3 class="font-heading text-lg font-bold">Before You Go</h3>
+                    <p class="text-gray-400 mt-2">AI-Powered Travel, Personalized for You.</p>
+                </div>
+                <div>
+                    <h3 class="font-heading text-lg font-bold">Links</h3>
+                    <ul class="mt-2 space-y-2">
+                        <li><a href="#features" class="text-gray-400 hover:text-white">Features</a></li>
+                        <li><a href="#how-it-works" class="text-gray-400 hover:text-white">Process</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-heading text-lg font-bold">Legal</h3>
+                    <ul class="mt-2 space-y-2">
+                        <li><button data-modal-trigger="privacy-modal" class="text-gray-400 hover:text-white">Privacy Policy</button></li>
+                        <li><button data-modal-trigger="terms-modal" class="text-gray-400 hover:text-white">Terms of Service</button></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="text-center text-gray-400 mt-12 border-t border-gray-700 pt-8">
+                <p>&copy; 2025 Before You Go. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modals (Initially Hidden) -->
+    <div id="quiz-modal" class="modal fixed inset-0 bg-black bg-opacity-60 items-center justify-center p-4 z-50 animate-fade-in-up">
+        <div class="modal-content bg-white p-8 md:p-12 rounded-4xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+            <!-- Modal Content (Quiz) will be injected here by JavaScript -->
+        </div>
+    </div>
+    <div id="explore-modal" class="modal fixed inset-0 bg-black bg-opacity-60 items-center justify-center p-4 z-50">
+        <div class="modal-content bg-white p-8 md:p-12 rounded-4xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto relative">
+            <button class="modal-close absolute top-4 right-4 text-gray-500 hover:text-black text-2xl">&times;</button>
+            <div class="prose max-w-none">
+                <h2 class="font-heading text-3xl font-bold text-brand-dark text-center">How Our AI Finds Your Perfect Trip</h2>
+                <p class="text-center text-lg">After creating your Travel DNA, our AI sifts through thousands of destinations, reviews, and hidden gems to find experiences that match your unique profile. Here's a glimpse of what you might see:</p>
+                <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 not-prose">
+                    <div class="border rounded-2xl p-4 text-center">
+                        <img src="https://images.pexels.com/photos/1684151/pexels-photo-1684151.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" class="rounded-xl aspect-square object-cover" alt="Adventure destination">
+                        <h3 class="font-heading text-xl font-bold mt-4">For The Thrill-Chaser</h3>
+                        <p class="text-sm">We've found a 98% match with whitewater rafting in Costa Rica.</p>
+                    </div>
+                    <div class="border rounded-2xl p-4 text-center">
+                        <img src="https://images.pexels.com/photos/210307/pexels-photo-210307.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" class="rounded-xl aspect-square object-cover" alt="Cultural destination">
+                        <h3 class="font-heading text-xl font-bold mt-4">For The Story-Collector</h3>
+                        <p class="text-sm">You'd love exploring the ancient markets of Marrakesh.</p>
+                    </div>
+                    <div class="border rounded-2xl p-4 text-center">
+                        <img src="https://images.pexels.com/photos/1450360/pexels-photo-1450360.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" class="rounded-xl aspect-square object-cover" alt="Relaxing destination">
+                        <h3 class="font-heading text-xl font-bold mt-4">For The Soul-Seeker</h3>
+                        <p class="text-sm">A 95% match for a wellness retreat in the Swiss Alps.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="journey-modal" class="modal fixed inset-0 bg-black bg-opacity-60 items-center justify-center p-4 z-50">
+        <div class="modal-content bg-white p-8 md:p-12 rounded-4xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto relative flex flex-col">
+            <button class="modal-close absolute top-4 right-4 text-gray-500 hover:text-black text-2xl">&times;</button>
+             <div class="prose max-w-none text-center mb-4">
+                <h2 class="font-heading text-3xl font-bold text-brand-dark">AI Travel Buddy ✨</h2>
+                <p>Ask your AI Buddy anything about your potential destinations!</p>
+            </div>
+            <div id="ai-buddy-chat-window" class="flex-grow border rounded-2xl p-4 overflow-y-auto bg-gray-50 flex flex-col space-y-4">
+                <!-- Chat messages will appear here -->
+                <div class="p-3 rounded-lg bg-brand-primary-light text-brand-primary-dark self-start max-w-md">Hello! I'm your AI Travel Buddy. Once you've generated a trip plan, I can answer your questions about the destination. What would you like to know?</div>
+            </div>
+            <form id="ai-buddy-form" class="mt-4 flex gap-4">
+                <input type="text" id="ai-buddy-input" placeholder="Ask about local customs, weather..." class="w-full border-gray-300 rounded-full focus:ring-brand-primary focus:border-brand-primary" required>
+                <button type="submit" class="btn-gradient text-white px-6 py-2.5 rounded-full font-semibold flex-shrink-0">Send</button>
+            </form>
+        </div>
+    </div>
+    <div id="privacy-modal" class="modal fixed inset-0 bg-black bg-opacity-60 items-center justify-center p-4 z-50">
+        <div class="modal-content bg-white p-8 md:p-12 rounded-4xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto relative">
+            <button class="modal-close absolute top-4 right-4 text-gray-500 hover:text-black">&times;</button>
+            <div class="prose lg:prose-lg max-w-none">
+                <h1 class="font-heading text-4xl font-bold text-brand-dark">Privacy Policy</h1>
+                <p>This Privacy Policy describes Our policies and procedures on the collection, use and disclosure of Your information when You use the Service and tells You about Your privacy rights and how the law protects You. We use Your Personal data to provide and improve the Service. By using the Service, You agree to the collection and use of information in accordance with this Privacy Policy.</p>
+                <h2>Interpretation and Definitions</h2>
+                <p>The words of which the initial letter is capitalized have meanings defined under the following conditions. The following definitions shall have the same meaning regardless of whether they appear in singular or in plural.</p>
+                <h2>Collecting and Using Your Personal Data</h2>
+                <p>While using Our Service, We may ask You to provide Us with certain personally identifiable information that can be used to contact or identify You. Personally identifiable information may include, but is not limited to: Email address, First name and last name, Usage Data.</p>
+            </div>
+        </div>
+    </div>
+    <div id="terms-modal" class="modal fixed inset-0 bg-black bg-opacity-60 items-center justify-center p-4 z-50">
+        <div class="modal-content bg-white p-8 md:p-12 rounded-4xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto relative">
+             <button class="modal-close absolute top-4 right-4 text-gray-500 hover:text-black">&times;</button>
+             <div class="prose lg:prose-lg max-w-none">
+                <h1 class="font-heading text-4xl font-bold text-brand-dark">Terms of Service</h1>
+                <p>Please read these terms and conditions carefully before using Our Service. By accessing or using the Service you agree to be bound by these Terms and Conditions. If you disagree with any part of the terms then you may not access the Service.</p>
+                <h2>Acknowledgment</h2>
+                <p>These are the Terms and Conditions governing the use of this Service and the agreement that operates between You and the Company. These Terms and Conditions set out the rights and obligations of all users regarding the use of the Service.</p>
+                <h2>Intellectual Property</h2>
+                <p>The Service and its original content (excluding Content provided by You or other users), features and functionality are and will remain the exclusive property of the Company and its licensors. The Service is protected by copyright, trademark, and other laws of both the Country and foreign countries.</p>
+            </div>
+        </div>
+    </div>
+    <div id="trip-planner-modal" class="modal fixed inset-0 bg-black bg-opacity-60 items-center justify-center p-4 z-50">
+        <div class="modal-content bg-white p-8 md:p-12 rounded-4xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+            <!-- Trip Planner Quiz / Results will be injected here -->
+        </div>
+    </div>
+
+
+    <script>
+        // --- 1. STATE MANAGEMENT ---
+        const userState = {
+            persona: null,
+            tripPreferences: {
+                category: null,
+                budget: null,
+                distance: null,
+                duration: null
+            },
+            lastGeneratedDestinations: []
+        };
+
+        // --- 2. MODAL & UI LOGIC ---
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+
+        const triggers = document.querySelectorAll('[data-modal-trigger]');
+        triggers.forEach(trigger => {
+            trigger.addEventListener('click', () => {
+                const modalId = trigger.getAttribute('data-modal-trigger');
+                const modal = document.getElementById(modalId);
+                openModal(modal);
+                if (modalId === 'quiz-modal') loadPersonaQuiz(modal);
+                if (modalId === 'journey-modal') setupAIBuddy();
+            });
+        });
+        
+        document.addEventListener('click', e => {
+            if (e.target.matches('.modal') || e.target.matches('.modal-close')) {
+                closeModal(e.target.closest('.modal'));
+            }
+        });
+
+        function openModal(modal) {
+            document.body.style.overflow = 'hidden';
+            modal.classList.add('is-open');
+        }
+
+        function closeModal(modal) {
+            modal.classList.remove('is-open');
+            document.body.style.overflow = 'auto';
+        }
+
+        // --- 3. DYNAMIC INSPIRATION SECTION ---
+        const inspirationCategories = {
+             'explorer': [
+                { name: 'Mountain Expeditions', category: 'mountains', img: 'https://images.pexels.com/photos/691668/pexels-photo-691668.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
+                { name: 'Jungle Treks', category: 'jungle', img: 'https://images.pexels.com/photos/2739013/pexels-photo-2739013.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
+                { name: 'Coastal Discoveries', category: 'coastal', img: 'https://images.pexels.com/photos/3889853/pexels-photo-3889853.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
+                { name: 'Desert Journeys', category: 'desert', img: 'https://images.pexels.com/photos/2387623/pexels-photo-2387623.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
+                { name: 'Off-Grid Adventures', category: 'off-grid', img: 'https://images.pexels.com/photos/1687845/pexels-photo-1687845.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
+                { name: 'Volcanic Landscapes', category: 'volcanic', img: 'https://images.pexels.com/photos/13713061/pexels-photo-13713061.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' }
+            ],
+            'story-collector': [
+                { name: 'Historic Cities', category: 'historic', img: 'https://images.pexels.com/photos/532255/pexels-photo-532255.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
+                { name: 'Cultural Festivals', category: 'festival', img: 'https://images.pexels.com/photos/1190298/pexels-photo-1190298.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
+                { name: 'Culinary Tours', category: 'food', img: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
+                { name: 'Art & Museums', category: 'art', img: 'https://images.pexels.com/photos/802024/pexels-photo-802024.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
+                { name: 'Architectural Wonders', category: 'architecture', img: 'https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
+                { name: 'Literary Trails', category: 'literary', img: 'https://images.pexels.com/photos/1292115/pexels-photo-1292115.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' }
+            ],
+            'soul-seeker': [
+                { name: 'Beach Escapes', category: 'beach', img: 'https://images.pexels.com/photos/1032650/pexels-photo-1032650.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
+                { name: 'Wellness Retreats', category: 'wellness', img: 'https://images.pexels.com/photos/3768916/pexels-photo-3768916.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
+                { name: 'Lakeside Serenity', category: 'lake', img: 'https://images.pexels.com/photos/462024/pexels-photo-462024.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
+                { name: 'Spiritual Journeys', category: 'spiritual', img: 'https://images.pexels.com/photos/372328/pexels-photo-372328.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
+                { name: 'Forest Bathing', category: 'forest', img: 'https://images.pexels.com/photos/1528641/pexels-photo-1528641.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
+                { name: 'Mountain Retreats', category: 'mountain-retreat', img: 'https://images.pexels.com/photos/1287145/pexels-photo-1287145.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' }
+            ],
+            'thrill-chaser': [
+                { name: 'Adrenaline Sports', category: 'sports', img: 'https://images.pexels.com/photos/3764567/pexels-photo-3764567.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
+                { name: 'Epic Treks', category: 'trekking', img: 'https://images.pexels.com/photos/572897/pexels-photo-572897.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
+                { name: 'Water Adventures', category: 'water', img: 'https://images.pexels.com/photos/1684151/pexels-photo-1684151.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
+                { name: 'Winter Sports', category: 'winter', img: 'https://images.pexels.com/photos/714258/pexels-photo-714258.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
+                { name: 'Extreme Road Trips', category: 'road-trip', img: 'https://images.pexels.com/photos/2395249/pexels-photo-2395249.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
+                { name: 'Cave Diving', category: 'cave-diving', img: 'https://images.pexels.com/photos/847402/pexels-photo-847402.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' }
+            ]
+        };
+
+        function updateInspirationSection() {
+            if (!userState.persona) return;
+            const subtitle = document.getElementById('inspiration-subtitle');
+            const grid = document.getElementById('inspiration-grid');
+            const categories = inspirationCategories[userState.persona];
+            
+            subtitle.textContent = `Based on your persona, here are some trip styles you might love. Select one to plan your trip!`;
+            grid.innerHTML = ''; // Clear default content
+            grid.classList.remove('lg:grid-cols-4', 'md:grid-cols-2');
+            grid.classList.add('lg:grid-cols-3', 'md:grid-cols-3'); // Adjust grid for 6 items
+            
+            categories.forEach(cat => {
+                grid.innerHTML += `
+                    <button data-category="${cat.category}" class="inspiration-card relative rounded-2xl shadow-lg overflow-hidden h-96 group card-hover text-left">
+                        <img src="${cat.img}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="${cat.name}">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
+                            <h3 class="text-white text-2xl font-heading font-bold">${cat.name}</h3>
+                        </div>
+                    </button>
+                `;
+            });
+
+            // Add event listeners to the new cards
+            document.querySelectorAll('.inspiration-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    userState.tripPreferences.category = card.getAttribute('data-category');
+                    const modal = document.getElementById('trip-planner-modal');
+                    openModal(modal);
+                    loadTripPlannerQuiz(modal);
+                });
+            });
+        }
+        
+        // --- 4. PERSONA QUIZ LOGIC ---
+        const personaQuizQuestions = [
+            { question: "A week off just opened up. Your first thought is:", options: [ { text: "Find a hidden cabin in the mountains.", value: "explorer" }, { text: "Finally, time to visit that famous museum.", value: "story-collector" }, { text: "Book a flight somewhere warm, now!", value: "soul-seeker" }, { text: "Check for last-minute adventure deals.", value: "thrill-chaser" } ] },
+            { question: "The ideal pace for a vacation day is:", options: [ { text: "Packed from sunrise to sunset with activities.", value: "thrill-chaser" }, { text: "A loose plan with plenty of room for spontaneity.", value: "explorer" }, { text: "One or two main cultural sights, with lots of cafe breaks.", value: "story-collector" }, { text: "Having zero obligations is the whole point.", value: "soul-seeker" } ] },
+            { question: "When you hear 'local cuisine', you think:", options: [ { text: " Michelin-starred restaurants with a famous chef.", value: "story-collector" }, { text: "Busy street food stalls everyone is talking about.", value: "explorer" }, { text: "Fresh, healthy food at a beachfront cafe.", value: "soul-seeker" }, { text: "Quick, high-energy food to fuel my activities.", value: "thrill-chaser" } ] },
+            { question: "Your preferred travel companion is:", options: [ { text: "A group of friends who are up for anything.", value: "thrill-chaser" }, { text: "My partner, for a shared experience.", value: "soul-seeker" }, { text: "Just myself and a map.", value: "explorer" }, { text: "My family or a friend who loves history.", value: "story-collector" } ] },
+            { question: "The perfect souvenir is:", options: [ { text: "A piece of art from a local gallery.", value: "story-collector" }, { text: "Just the memories and photos.", value: "thrill-chaser" }, { text: "An interesting rock or shell from a remote place.", value: "explorer" }, { text: "A handmade bracelet that supports local artisans.", value: "soul-seeker" } ] },
+            { question: "A 'great view' means:", options: [ { text: "Looking down from the top of a mountain I just climbed.", value: "thrill-chaser" }, { text: "A panoramic city skyline from a rooftop bar.", value: "story-collector" }, { text: "An endless, empty desert or forest.", value: "explorer" }, { text: "The ocean from my private balcony.", value: "soul-seeker" } ] },
+            { question: "How much of your trip do you document on social media?", options: [ { text: "I post stories all day to share the experience live.", value: "thrill-chaser" }, { text: "A curated post at the end of each day.", value: "story-collector" }, { text: "Maybe one or two photos if I remember.", value: "explorer" }, { text: "My phone is off most of the time.", value: "soul-seeker" } ] },
+            { question: "What does 'luxury' mean to you on a trip?", options: [ { text: "Having a private guide and exclusive access.", value: "story-collector" }, { text: "Time and silence.", value: "soul-seeker" }, { text: "Top-of-the-line gear for my adventures.", value: "thrill-chaser" }, { text: "The freedom to have no fixed address.", value: "explorer" } ] },
+            { question: "You're lost in a new city. You:", options: [ { text: "Embrace it. This is where the adventure begins.", value: "explorer" }, { text: "Ask a local shopkeeper for directions and a story.", value: "story-collector" }, { text: "Use it as an opportunity to find a quiet park and relax.", value: "soul-seeker" }, { text: "See it as a race to find my way back.", value: "thrill-chaser" } ] },
+            { question: "The most important part of your accommodation is:", options: [ { text: "Proximity to nature trails or adventure spots.", value: "thrill-chaser" }, { text: "A central location in a historic district.", value: "story-collector" }, { text: "Complete isolation and privacy.", value: "explorer" }, { text: "A comfortable bed and a peaceful atmosphere.", value: "soul-seeker" } ] },
+            { question: "What kind of museum would you choose?", options: [ { text: "A modern art museum with challenging exhibits.", value: "story-collector" }, { text: "An outdoor museum or historical reenactment.", value: "explorer" }, { text: "A small, quirky museum about a local legend.", value: "story-collector" }, { text: "I'd rather be outside than in a museum.", value: "thrill-chaser" } ] },
+             { question: "Your ideal evening on vacation ends with:", options: [ { text: "Stargazing far from city lights.", value: "explorer" }, { text: "A quiet glass of wine and reflection.", value: "soul-seeker" }, { text: "Sharing stories with new friends at a bonfire.", value: "thrill-chaser" }, { text: "Seeing a play or a live music performance.", value: "story-collector" } ] },
+            { question: "Which travel movie character are you?", options: [ { text: "Indiana Jones, searching for ancient artifacts.", value: "explorer" }, { text: "Elizabeth Gilbert in 'Eat Pray Love', on a journey of self-discovery.", value: "soul-seeker" }, { text: "James Bond, on a glamorous and action-packed mission.", value: "thrill-chaser" }, { text: "The narrator in 'Amélie', finding magic in everyday city life.", value: "story-collector" } ] },
+            { question: "The best travel photos are:", options: [ { text: "Candid shots of people and daily life.", value: "story-collector" }, { text: "Epic, wide-angle landscapes with no people.", value: "explorer" }, { text: "Action shots of an activity.", value: "thrill-chaser" }, { text: "Peaceful sunrises or sunsets.", value: "soul-seeker" } ] },
+            { question: "After a trip, you feel most fulfilled by:", options: [ { text: "The new skills or knowledge you acquired.", value: "story-collector" }, { text: "The sense of peace and rejuvenation.", value: "soul-seeker" }, { text: "The stories of the challenges you overcame.", value: "thrill-chaser" }, { text: "Knowing you saw a place few others have seen.", value: "explorer" } ] }
+        ];
+        
+        const personaQuizResults = {
+            'explorer': { persona: "The Explorer", title: "Your DNA is set for discovery!", description: "You're driven by curiosity and a desire to get off the beaten path. You crave authenticity and aren't afraid of a little unpredictability. Now, let's find your next great adventure below!" },
+            'story-collector': { persona: "The Story Collector", title: "You're a cultural connoisseur!", description: "You travel to learn, to taste, and to immerse yourself in the rich tapestry of human history and creativity. Your perfect trip is filled with stories. Let's find your next chapter below!" },
+            'soul-seeker': { persona: "The Soul Seeker", title: "You travel to reconnect!", description: "For you, a journey is a chance to recharge, reflect, and find tranquility. Comfort, beauty, and peace are your priorities. Let's find your sanctuary below!" },
+            'thrill-chaser': { persona: "The Thrill Chaser", title: "You're an adrenaline junkie!", description: "You see the world as a playground and travel as a chance to push your limits. Your ideal trip gets your heart pumping. Let's find your next epic challenge below!" }
+        };
+
+        function loadPersonaQuiz(modal) {
+            const container = modal.querySelector('.modal-content');
+            let currentQuestionIndex = 0;
+            const userAnswers = {};
+
+            function render() {
+                const questionData = personaQuizQuestions[currentQuestionIndex];
+                let optionsHTML = '';
+                questionData.options.forEach((option, i) => {
+                    const isSelected = userAnswers[currentQuestionIndex] === i;
+                    optionsHTML += `<div data-option-index="${i}" class="quiz-option cursor-pointer border-2 ${isSelected ? 'border-brand-primary bg-brand-primary-light text-brand-primary-dark' : 'border-gray-200'} rounded-2xl p-4 mt-4 font-medium hover:border-brand-primary">${option.text}</div>`;
+                });
+
+                container.innerHTML = `
+                    <button class="modal-close absolute top-4 right-4 text-gray-500 hover:text-black text-2xl">&times;</button>
+                    <div id="quiz-container">
+                        <div class="mb-8">
+                            <span id="progress-text" class="text-sm font-medium text-brand-primary">Question ${currentQuestionIndex + 1} of ${personaQuizQuestions.length}</span>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5 mt-2"><div id="progress-bar" class="bg-brand-primary h-2.5 rounded-full" style="width: ${((currentQuestionIndex + 1) / personaQuizQuestions.length) * 100}%"></div></div>
+                        </div>
+                        <h2 class="font-heading text-2xl md:text-3xl font-bold text-brand-dark">${questionData.question}</h2>
+                        <div class="mt-6">${optionsHTML}</div>
+                    </div>
+                    <div class="mt-10 flex justify-between items-center">
+                        <button id="prev-btn" class="bg-gray-200 text-gray-700 px-6 py-2 rounded-full font-semibold hover:bg-gray-300 disabled:opacity-50">Previous</button>
+                        <button id="next-btn" class="bg-brand-accent text-white px-8 py-3 rounded-full font-bold hover:bg-brand-accent-hover shadow-md">${currentQuestionIndex === personaQuizQuestions.length - 1 ? 'Reveal My Persona!' : 'Next Question'}</button>
+                    </div>
+                `;
+                
+                container.querySelector('#prev-btn').disabled = currentQuestionIndex === 0;
+                container.querySelector('#prev-btn').addEventListener('click', () => { if(currentQuestionIndex > 0) { currentQuestionIndex--; render(); }});
+                container.querySelector('#next-btn').addEventListener('click', handleNext);
+                container.querySelectorAll('.quiz-option').forEach(opt => opt.addEventListener('click', e => {
+                    userAnswers[currentQuestionIndex] = parseInt(e.currentTarget.getAttribute('data-option-index'));
+                    render();
+                }));
+            }
+
+            function handleNext() {
+                if(userAnswers[currentQuestionIndex] === undefined) return; 
+
+                if (currentQuestionIndex < personaQuizQuestions.length - 1) {
+                    currentQuestionIndex++;
+                    render();
+                } else {
+                    const persona = calculatePersona();
+                    userState.persona = persona;
+                    const resultData = personaQuizResults[persona];
+                    renderResults(resultData);
+                }
+            }
+
+            function calculatePersona() {
+                const vote = { 'explorer': 0, 'story-collector': 0, 'soul-seeker': 0, 'thrill-chaser': 0 };
+                for(let i = 0; i < personaQuizQuestions.length; i++) {
+                    const answerIndex = userAnswers[i];
+                    if(answerIndex !== undefined) {
+                        const personaValue = personaQuizQuestions[i].options[answerIndex].value;
+                        vote[personaValue]++;
+                    }
+                }
+                let maxVotes = 0;
+                let finalPersona = 'explorer';
+                for (const persona in vote) {
+                    if (vote[persona] > maxVotes) {
+                        maxVotes = vote[persona];
+                        finalPersona = persona;
+                    }
+                }
+                return finalPersona;
+            }
+
+            function renderResults(resultData) {
+                container.innerHTML = `
+                    <div class="text-center animate-fade-in-up">
+                        <p class="font-semibold text-brand-primary">YOUR TRAVEL DNA</p>
+                        <h2 class="font-heading text-4xl font-bold text-brand-dark mt-2">${resultData.persona}</h2>
+                        <p class="text-lg text-gray-700 mt-4">${resultData.title}</p>
+                        <p class="mt-2 text-gray-600">${resultData.description}</p>
+                        <button id="show-inspiration-btn" class="mt-8 bg-brand-accent text-white px-8 py-3 rounded-full font-bold hover:bg-brand-accent-hover">Let's Go!</button>
+                    </div>
+                `;
+                document.getElementById('show-inspiration-btn').addEventListener('click', () => {
+                    closeModal(modal);
+                    updateInspirationSection();
+                    document.getElementById('inspiration').scrollIntoView({ behavior: 'smooth' });
+                });
+            }
+            render();
+        }
+
+        // --- 5. TRIP PLANNER QUIZ & DESTINATION LOGIC ---
+        const tripPlannerQuestions = [
+            { id: 'distance', question: 'How far are you looking to go?', options: [ {text: 'Stay Domestic', value: 'domestic'}, {text: 'Short-Haul (Nearby Countries)', value: 'short-haul'}, {text: 'Long-Haul (Across the Globe)', value: 'long-haul'}] },
+            { id: 'duration', question: 'How long is your trip?', options: [ {text: 'A Weekend Getaway (2-4 days)', value: 'weekend'}, {text: 'About a Week (5-10 days)', value: 'week'}, {text: 'A Long Expedition (10+ days)', value: 'expedition'}] },
+            { id: 'budget', question: 'What is your travel budget style?', options: [ {text: 'Budget-Friendly (Hostels, street food)', value: 'budget'}, {text: 'Mid-Range (Comfortable hotels, mix of dining)', value: 'mid-range'}, {text: 'Luxury (High-end resorts, fine dining)', value: 'luxury'}] }
+        ];
+
+        function loadTripPlannerQuiz(modal) {
+            const container = modal.querySelector('.modal-content');
+            let currentQuestionIndex = 0;
+            
+            function render() {
+                const questionData = tripPlannerQuestions[currentQuestionIndex];
+                 let optionsHTML = '';
+                questionData.options.forEach((option, i) => {
+                    const isSelected = userState.tripPreferences[questionData.id] === option.value;
+                    optionsHTML += `<div data-value="${option.value}" class="quiz-option cursor-pointer border-2 ${isSelected ? 'border-brand-primary bg-brand-primary-light text-brand-primary-dark' : 'border-gray-200'} rounded-2xl p-4 mt-4 font-medium hover:border-brand-primary">${option.text}</div>`;
+                });
+                
+                container.innerHTML = `
+                    <button class="modal-close absolute top-4 right-4 text-gray-500 hover:text-black text-2xl">&times;</button>
+                    <div id="trip-planner-container">
+                        <div class="mb-8 text-center">
+                            <h2 class="font-heading text-3xl font-bold text-brand-dark">Plan Your Trip</h2>
+                            <p class="text-gray-600">A few more details to find your perfect destination.</p>
+                        </div>
+                        <h3 class="font-heading text-xl font-bold text-brand-dark mt-6">${questionData.question}</h3>
+                        <div>${optionsHTML}</div>
+                    </div>
+                    <div class="mt-10 flex justify-end">
+                        <button id="generate-trip-btn" class="bg-brand-accent text-white px-8 py-3 rounded-full font-bold hover:bg-brand-accent-hover shadow-md">${currentQuestionIndex === tripPlannerQuestions.length - 1 ? 'Find Destinations!' : 'Next'}</button>
+                    </div>
+                `;
+
+                container.querySelectorAll('.quiz-option').forEach(opt => opt.addEventListener('click', e => {
+                    const value = e.currentTarget.getAttribute('data-value');
+                    userState.tripPreferences[questionData.id] = value;
+                    if (currentQuestionIndex < tripPlannerQuestions.length - 1) {
+                        currentQuestionIndex++;
+                        render();
+                    } else {
+                        render();
+                    }
+                }));
+
+                container.querySelector('#generate-trip-btn').addEventListener('click', () => {
+                    if (currentQuestionIndex < tripPlannerQuestions.length - 1) {
+                         currentQuestionIndex++;
+                         render();
+                    } else if (userState.tripPreferences.budget && userState.tripPreferences.distance && userState.tripPreferences.duration) {
+                        const destinations = generateDestinations();
+                        renderTripResults(destinations, modal);
+                    }
+                });
+            }
+            render();
+        }
+
+        function renderTripResults(destinations, modal) {
+            userState.lastGeneratedDestinations = destinations;
+            const container = modal.querySelector('.modal-content');
+            let resultsHTML = '';
+
+            if (destinations.length > 0) {
+                 destinations.forEach((dest, index) => {
+                    resultsHTML += `
+                        <div class="border bg-gray-50 rounded-2xl p-6 mt-6">
+                             <div class="flex justify-between items-center">
+                                <h3 class="font-heading text-2xl font-bold text-brand-dark">${dest.name}</h3>
+                                <button data-details-target="${index}" class="view-details-btn text-brand-primary font-bold">View Details</button>
+                             </div>
+                             <div id="details-${index}" class="trip-details mt-4">
+                                <img src="${dest.image}" class="rounded-xl aspect-video object-cover w-full" alt="${dest.name}">
+                                <div id="itinerary-container-${index}" class="mt-4">
+                                    <p class="text-gray-600 mt-4">${dest.description}</p>
+                                    <button data-dest-index="${index}" class="generate-itinerary-btn mt-4 w-full bg-brand-primary text-white font-bold py-3 px-4 rounded-full flex items-center justify-center gap-2">
+                                        ✨ Generate Detailed Itinerary
+                                    </button>
+                                </div>
+                                <div class="mt-6 flex gap-4">
+                                    <button class="w-full bg-gray-800 text-white font-bold py-2 px-4 rounded-full">Book Flights</button>
+                                    <button class="w-full bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-full">Book Hotels</button>
+                                </div>
+                             </div>
+                        </div>
+                    `;
+                 });
+            } else {
+                resultsHTML = `<p class="text-center text-gray-600 mt-8">No exact matches found for your specific criteria, but our AI is always learning! Try different options to see more possibilities.</p>`;
+            }
+
+            container.innerHTML = `
+                <button class="modal-close absolute top-4 right-4 text-gray-500 hover:text-black text-2xl">&times;</button>
+                <div class="text-center animate-fade-in-up">
+                    <p class="font-semibold text-brand-primary">YOUR CURATED DESTINATIONS</p>
+                    <h2 class="font-heading text-4xl font-bold text-brand-dark mt-2">Here Are Your Matches</h2>
+                    <div id="results-container" class="my-8 text-left max-w-none">${resultsHTML}</div>
+                    <button class="modal-close mt-8 bg-brand-accent text-white px-8 py-3 rounded-full font-bold hover:bg-brand-accent-hover">Start Over</button>
+                </div>
+            `;
+            
+            container.querySelectorAll('.view-details-btn').forEach(btn => {
+                btn.addEventListener('click', e => {
+                    const targetId = e.currentTarget.getAttribute('data-details-target');
+                    const detailsDiv = document.getElementById(`details-${targetId}`);
+                    if (detailsDiv.style.maxHeight) {
+                        detailsDiv.style.maxHeight = null;
+                        e.currentTarget.textContent = "View Details";
+                    } else {
+                        detailsDiv.style.maxHeight = detailsDiv.scrollHeight + "px";
+                        e.currentTarget.textContent = "Hide Details";
+                    }
+                });
+            });
+
+            container.querySelectorAll('.generate-itinerary-btn').forEach(btn => {
+                btn.addEventListener('click', e => {
+                    const destIndex = e.currentTarget.getAttribute('data-dest-index');
+                    const destination = destinations[destIndex];
+                    handleGenerateItinerary(destination, destIndex);
+                });
+            });
+        }
+        
+        // --- 6. MOCK DESTINATION DATABASE & GENERATION ---
+        const destinationDB = [
+            // Explorer
+            { name: "Patagonia, Chile", personaTags: ['explorer'], category: 'mountains', distance: 'long-haul', duration: 'expedition', budget: 'mid-range', image: "https://images.pexels.com/photos/371589/pexels-photo-371589.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", description: "Hike among glaciers and jagged peaks in this remote wilderness.", itinerary: [{day: 1, activity: "Arrive in El Calafate."}, {day: 2, activity: "Trek on Perito Moreno Glacier."}, {day: 3, activity: "Hike to Mount Fitz Roy."}] },
+            { name: "The Australian Outback", personaTags: ['explorer'], category: 'desert', distance: 'long-haul', duration: 'week', budget: 'mid-range', image: "https://images.pexels.com/photos/1842332/pexels-photo-1842332.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", description: "Experience the vast, rugged heart of Australia.", itinerary: [{day: 1, activity: "Sunset over Uluru."}, {day: 2, activity: "Hike Valley of the Winds."}, {day: 3, activity: "Kings Canyon Rim Walk."}] },
+            { name: "Ha Giang Loop, Vietnam", personaTags: ['explorer'], category: 'mountains', distance: 'short-haul', duration: 'week', budget: 'budget', image: "https://images.pexels.com/photos/1007427/pexels-photo-1007427.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", description: "A motorbike adventure through spectacular mountain scenery.", itinerary: [{day: 1, activity: "Start loop from Ha Giang."}, {day: 2, activity: "Drive Ma Pi Leng Pass."}, {day: 3, activity: "Visit Lung Cu Flag Tower."}] },
+            { name: "Spiti Valley, India", personaTags: ['explorer'], category: 'off-grid', distance: 'domestic', duration: 'expedition', budget: 'budget', image: "https://images.pexels.com/photos/1098460/pexels-photo-1098460.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", description: "A cold desert mountain valley in the Himalayas.", itinerary: [{day: 1, activity: "Visit Key Monastery."}, {day: 2, activity: "Explore Tabo and Dhankar Monasteries."}, {day: 3, activity: "Drive to Chandratal Lake."}] },
+            { name: "Iceland's Ring Road", personaTags: ['explorer'], category: 'volcanic', distance: 'long-haul', duration: 'week', budget: 'luxury', image: "https://images.pexels.com/photos/259698/pexels-photo-259698.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", description: "Circle a country of glaciers, volcanoes, and waterfalls.", itinerary: [{day: 1, activity: "Explore the Golden Circle."}, {day: 2, activity: "Visit Jökulsárlón glacier lagoon."}, {day: 3, activity: "Hike on Skaftafell glacier."}] },
+
+            // Story-Collector
+            { name: "Rome, Italy", personaTags: ['story-collector'], category: 'historic', distance: 'long-haul', duration: 'week', budget: 'mid-range', image: "https://images.pexels.com/photos/1797161/pexels-photo-1797161.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", description: "Walk through millennia of history, from the Colosseum to the Vatican.", itinerary: [{day: 1, activity: "Explore Colosseum & Roman Forum."}, {day: 2, activity: "Visit Vatican City."}, {day: 3, activity: "Wander through Trastevere."}] },
+            { name: "Jaipur, India", personaTags: ['story-collector'], category: 'historic', distance: 'domestic', duration: 'week', budget: 'budget', image: "https://images.pexels.com/photos/357577/pexels-photo-357577.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", description: "Explore the vibrant 'Pink City' with its majestic forts and bazaars.", itinerary: [{day: 1, activity: "Visit Hawa Mahal & City Palace."}, {day: 2, activity: "Explore Amer Fort."}, {day: 3, activity: "Shop in local bazaars."}] },
+            { name: "New Orleans, USA", personaTags: ['story-collector'], category: 'festival', distance: 'long-haul', duration: 'week', budget: 'mid-range', image: "https://images.pexels.com/photos/2085831/pexels-photo-2085831.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", description: "A city alive with jazz, Creole cuisine, and a rich, eclectic history.", itinerary: [{day: 1, activity: "Explore the French Quarter."}, {day: 2, activity: "Take a streetcar to the Garden District."}, {day: 3, activity: "Enjoy beignets at Café du Monde."}] },
+            { name: "Dubai, UAE", personaTags: ['story-collector'], category: 'architecture', distance: 'short-haul', duration: 'week', budget: 'luxury', image: "https://images.pexels.com/photos/3787839/pexels-photo-3787839.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", description: "Witness the future of architecture, from the world's tallest building to man-made islands.", itinerary: [{day: 1, activity: "Ascend the Burj Khalifa."}, {day: 2, activity: "Explore the Dubai Mall and see the fountains."}, {day: 3, activity: "Visit the Palm Jumeirah and the Old Souks."}] },
+            { name: "Dublin, Ireland", personaTags: ['story-collector'], category: 'literary', distance: 'long-haul', duration: 'week', budget: 'mid-range', image: "https://images.pexels.com/photos/6589087/pexels-photo-6589087.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", description: "Walk in the footsteps of literary giants like James Joyce and Oscar Wilde in this cozy capital.", itinerary: [{day: 1, activity: "Visit the Trinity College Library."}, {day: 2, activity: "Take a literary pub crawl in Temple Bar."}, {day: 3, activity: "Explore the Dublin Writers Museum."}] },
+
+            // Soul-Seeker
+            { name: "The Maldives", personaTags: ['soul-seeker'], category: 'beach', distance: 'short-haul', duration: 'week', budget: 'luxury', image: "https://images.pexels.com/photos/1483024/pexels-photo-1483024.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", description: "Unwind in an overwater bungalow above turquoise waters.", itinerary: [{day: 1, activity: "Arrive at your overwater villa."}, {day: 2, activity: "Snorkel and get a spa treatment."}, {day: 3, activity: "Take a sunset cruise."}] },
+            { name: "Sedona, Arizona, USA", personaTags: ['soul-seeker'], category: 'spiritual', distance: 'long-haul', duration: 'week', budget: 'mid-range', image: "https://images.pexels.com/photos/632470/pexels-photo-632470.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", description: "Find your center among stunning red rock formations and energy vortices.", itinerary: [{day: 1, activity: "Hike to Cathedral Rock for sunset."}, {day: 2, activity: "Yoga session at an energy vortex."}, {day: 3, activity: "Explore Tlaquepaque art village."}] },
+            { name: "Lake Como, Italy", personaTags: ['soul-seeker'], category: 'lake', distance: 'long-haul', duration: 'week', budget: 'luxury', image: "https://images.pexels.com/photos/2662116/pexels-photo-2662116.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", description: "Experience timeless elegance and tranquility with stunning alpine scenery.", itinerary: [{day: 1, activity: "Ferry to Bellagio."}, {day: 2, activity: "Visit the gardens of Villa Carlotta."}, {day: 3, activity: "Lakeside lunch in Varenna."}] },
+            { name: "Coorg, India", personaTags: ['soul-seeker'], category: 'forest', distance: 'domestic', duration: 'weekend', budget: 'budget', image: "https://images.pexels.com/photos/1603539/pexels-photo-1603539.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", description: "Immerse yourself in the lush greenery and coffee plantations of the 'Scotland of India'.", itinerary: [{day: 1, activity: "Explore a coffee estate."}, {day: 2, activity: "Visit Abbey Falls and Raja's Seat."}, {day: 3, activity: "Enjoy the peaceful atmosphere of the Namdroling Monastery."}] },
+            { name: "Pokhara, Nepal", personaTags: ['soul-seeker'], category: 'mountain-retreat', distance: 'short-haul', duration: 'week', budget: 'mid-range', image: "https://images.pexels.com/photos/236294/pexels-photo-236294.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", description: "Find peace by Phewa Lake with the stunning Annapurna mountain range as your backdrop.", itinerary: [{day: 1, activity: "Boating on Phewa Lake."}, {day: 2, activity: "Sunrise hike to Sarangkot."}, {day: 3, activity: "Visit the World Peace Pagoda."}] },
+
+            // Thrill-Chaser
+            { name: "Interlaken, Switzerland", personaTags: ['thrill-chaser'], category: 'sports', distance: 'long-haul', duration: 'week', budget: 'luxury', image: "https://images.pexels.com/photos/4534200/pexels-photo-4534200.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", description: "The adventure capital of Europe, offering skydiving, paragliding, and canyoning.", itinerary: [{day: 1, activity: "Paraglide over Lake Thun."}, {day: 2, activity: "Go canyoning in Grimsel Pass."}, {day: 3, activity: "Take the train to Jungfraujoch."}] },
+            { name: "Moab, Utah, USA", personaTags: ['thrill-chaser'], category: 'trekking', distance: 'long-haul', duration: 'week', budget: 'mid-range', image: "https://images.pexels.com/photos/3363359/pexels-photo-3363359.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", description: "A desert playground for mountain biking, rock climbing, and off-roading.", itinerary: [{day: 1, activity: "Bike the Slickrock Trail."}, {day: 2, activity: "Hike to Delicate Arch."}, {day: 3, activity: "4x4 tour in Canyonlands."}] },
+            { name: "Rishikesh, India", personaTags: ['thrill-chaser'], category: 'water', distance: 'domestic', duration: 'weekend', budget: 'budget', image: "https://images.pexels.com/photos/10182296/pexels-photo-10182296.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", description: "Challenge the rapids of the Ganges with world-class whitewater rafting.", itinerary: [{day: 1, activity: "Whitewater rafting on the Ganges."}, {day: 2, activity: "Bungee jump from India's highest platform."}, {day: 3, activity: "Hike to Neer Garh Waterfall."}] },
+            { name: "Yucatan Peninsula, Mexico", personaTags: ['thrill-chaser'], category: 'cave-diving', distance: 'long-haul', duration: 'week', budget: 'mid-range', image: "https://images.pexels.com/photos/36347/cenote-ik-kil-mexico-yucatan.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", description: "Explore the sacred and mysterious underwater cenotes (sinkholes) of the Mayan world.", itinerary: [{day: 1, activity: "Dive in the Gran Cenote."}, {day: 2, activity: "Explore the Dos Ojos cenote system."}, {day: 3, activity: "Relax at a beach club in Tulum."}] },
+            { name: "North Coast 500, Scotland", personaTags: ['thrill-chaser'], category: 'road-trip', distance: 'long-haul', duration: 'week', budget: 'mid-range', image: "https://images.pexels.com/photos/507410/pexels-photo-507410.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", description: "Drive one of the world's most iconic coastal touring routes through the rugged Scottish Highlands.", itinerary: [{day: 1, activity: "Start in Inverness and drive west."}, {day: 2, activity: "Navigate the winding Bealach na Bà pass."}, {day: 3, activity: "Explore the dramatic Smoo Cave and Duncansby Head."}] }
+        ];
+
+        function generateDestinations() {
+            const { persona, tripPreferences } = userState;
+            
+            // New Scoring Algorithm
+            const scoredDestinations = destinationDB.map(dest => {
+                let score = 0;
+                // Core matches are weighted higher
+                if (dest.personaTags.includes(persona)) score += 3;
+                if (dest.category === tripPreferences.category) score += 2;
+                
+                // Preference matches
+                if (dest.budget === tripPreferences.budget) score += 1;
+                if (dest.distance === tripPreferences.distance) score += 1;
+                if (dest.duration === tripPreferences.duration) score += 1;
+
+                return { ...dest, score };
+            });
+
+            // Sort by score, descending
+            const sortedDestinations = scoredDestinations.sort((a, b) => b.score - a.score);
+
+            // Return the top 3 matches with a good score
+            // A score of 6 ensures Persona + Category + one other preference match
+            return sortedDestinations.filter(dest => dest.score >= 6).slice(0, 3);
+        }
+
+        // --- 7. GEMINI API INTEGRATION ---
+        async function callGemini(prompt, systemInstruction = "You are a helpful and creative travel assistant.") {
+            const apiKey = ""; // API key will be handled by the environment
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+            const payload = {
+                contents: [{ parts: [{ text: prompt }] }],
+                systemInstruction: { parts: [{ text: systemInstruction }] }
+            };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    console.error("API Error Response:", await response.text());
+                    return `<p class="text-red-500">Error: The travel AI is currently unavailable. Please try again later.</p>`;
+                }
+
+                const result = await response.json();
+                const candidate = result.candidates?.[0];
+                if (candidate && candidate.content?.parts?.[0]?.text) {
+                    return marked.parse(candidate.content.parts[0].text); // Use marked to parse markdown
+                } else {
+                    console.error("Invalid API response structure:", result);
+                    return `<p class="text-red-500">Sorry, I couldn't generate a response. The AI might be busy.</p>`;
+                }
+            } catch (error) {
+                console.error("Fetch Error:", error);
+                return `<p class="text-red-500">An error occurred while contacting the travel AI. Please check your connection.</p>`;
+            }
+        }
+        
+        async function handleGenerateItinerary(destination, destIndex) {
+            const container = document.getElementById(`itinerary-container-${index}`);
+            const button = container.querySelector('.generate-itinerary-btn');
+            button.innerHTML = `<div class="spinner"></div><span>Generating...</span>`;
+            button.disabled = true;
+
+            const { persona, tripPreferences } = userState;
+            const prompt = `
+                You are an expert travel planner. A user with the travel persona of a '${persona}' 
+                is planning a '${tripPreferences.duration}' trip to '${destination.name}' on a 
+                '${tripPreferences.budget}' budget. Their main interest is '${tripPreferences.category}'.
+                
+                Generate a detailed, day-by-day itinerary for them. Make it engaging, exciting, 
+                and specific to their persona. Use markdown for formatting with headings for each day.
+            `;
+            
+            const itineraryHTML = await callGemini(prompt);
+            container.innerHTML = `
+                <div class="gemini-content">${itineraryHTML}</div>
+                <button data-dest-name="${destination.name}" class="find-gems-btn mt-4 w-full bg-brand-accent text-white font-bold py-3 px-4 rounded-full flex items-center justify-center gap-2">
+                    ✨ Suggest Hidden Gems
+                </button>
+            `;
+            
+            container.querySelector('.find-gems-btn').addEventListener('click', e => {
+                const destName = e.currentTarget.getAttribute('data-dest-name');
+                handleFindHiddenGems(destName, container);
+            });
+
+            // Make sure the collapsible section resizes correctly
+            const detailsDiv = document.getElementById(`details-${destIndex}`);
+            detailsDiv.style.maxHeight = detailsDiv.scrollHeight + "px";
+        }
+
+        async function handleFindHiddenGems(destinationName, container) {
+            const button = container.querySelector('.find-gems-btn');
+            button.innerHTML = `<div class="spinner"></div><span>Finding Gems...</span>`;
+            button.disabled = true;
+            
+            const { persona } = userState;
+            const prompt = `
+                You are a local expert for '${destinationName}'. A tourist with the travel persona 
+                of a '${persona}' is visiting. Suggest 3 unique, non-touristy 'hidden gems' 
+                (like a specific cafe, a small museum, a beautiful walking path, or a local market) 
+                that they would love. For each suggestion, briefly explain why it fits their persona.
+                Use markdown for formatting.
+            `;
+            
+            const gemsHTML = await callGemini(prompt, `You are a local guide with deep knowledge of hidden gems.`);
+            const gemsContainer = document.createElement('div');
+            gemsContainer.className = "gemini-content mt-4 border-t pt-4";
+            gemsContainer.innerHTML = gemsHTML;
+            container.appendChild(gemsContainer);
+            button.style.display = 'none'; // Hide button after use
+
+            // Make sure the collapsible section resizes correctly
+            const detailsDiv = container.closest('.trip-details');
+            detailsDiv.style.maxHeight = detailsDiv.scrollHeight + "px";
+        }
+        
+        function setupAIBuddy() {
+            const form = document.getElementById('ai-buddy-form');
+            const input = document.getElementById('ai-buddy-input');
+            const chatWindow = document.getElementById('ai-buddy-chat-window');
+            
+            // This is a one-time setup, so we use a flag to prevent multiple listeners
+            if (form.dataset.initialized) return;
+            form.dataset.initialized = true;
+
+            form.addEventListener('submit', async e => {
+                e.preventDefault();
+                const userMessage = input.value.trim();
+                if (!userMessage) return;
+
+                // Add user message to window
+                const userBubble = document.createElement('div');
+                userBubble.className = "p-3 rounded-lg bg-brand-accent text-white self-end max-w-md";
+                userBubble.textContent = userMessage;
+                chatWindow.appendChild(userBubble);
+                input.value = '';
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+
+                // Add loading indicator
+                const loadingBubble = document.createElement('div');
+                loadingBubble.className = "p-3 rounded-lg bg-brand-primary-light text-brand-primary-dark self-start max-w-md flex items-center";
+                loadingBubble.innerHTML = `<div class="spinner mr-2"></div> Thinking...`;
+                chatWindow.appendChild(loadingBubble);
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+
+                const destinationContext = userState.lastGeneratedDestinations.length > 0 
+                    ? `The user is interested in these destinations: ${userState.lastGeneratedDestinations.map(d => d.name).join(', ')}.`
+                    : "The user has not selected a destination yet, so try to answer generally.";
+                
+                const systemPrompt = `You are the 'AI Travel Buddy'. Be friendly, helpful, and concise. ${destinationContext}`;
+                const responseHTML = await callGemini(userMessage, systemPrompt);
+
+                // Replace loading bubble with AI response
+                loadingBubble.innerHTML = responseHTML;
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            });
+        }
+
+    </script>
+</body>
+</html>
+
