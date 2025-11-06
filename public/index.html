@@ -1096,6 +1096,8 @@
             }
 
             async function handleNext() {
+                console.log('handleNext called, current index:', currentQuestionIndex); // Debug log
+                
                 if(userAnswers[currentQuestionIndex] === undefined) {
                     const errorEl = container.querySelector('#quiz-error');
                     if (errorEl) errorEl.textContent = "Please select an option to continue.";
@@ -1104,12 +1106,25 @@
 
                 if (currentQuestionIndex < personaQuizQuestions.length - 1) {
                     currentQuestionIndex++;
+                    console.log('Moving to next question:', currentQuestionIndex); // Debug log
                     render();
                 } else {
+                    console.log('Quiz completed, calculating persona...'); // Debug log
                     const persona = calculatePersona();
+                    console.log('Calculated persona:', persona); // Debug log
+                    
                     userState.persona = persona;
-                    await saveUserProfile(currentUserId, { persona: persona }); // Save to Firebase
+                    
+                    try {
+                        console.log('Saving profile to Firebase...'); // Debug log
+                        await saveUserProfile(currentUserId, { persona: persona }); // Save to Firebase
+                        console.log('Profile saved successfully'); // Debug log
+                    } catch (error) {
+                        console.error('Error saving profile:', error);
+                    }
+                    
                     const resultData = personaQuizResults[persona];
+                    console.log('Rendering results for persona:', resultData); // Debug log
                     renderResults(resultData, container);
                 }
             }
@@ -1135,18 +1150,31 @@
             }
             
             function renderResults(resultData, container) {
+                console.log('Rendering results with data:', resultData); // Debug log
+                
                 // Show the persona result inside the quiz modal
                 container.innerHTML = `
                     <div class="p-8 text-center">
-                        <h2 class="font-heading text-2xl font-bold mb-4">${resultData.persona}</h2>
-                        <p class="text-lg text-gray-700 mb-3 font-semibold">${resultData.title}</p>
-                        <p class="text-gray-600 mb-8">${resultData.description}</p>
-                        <button id="reveal-persona-btn" class="bg-brand-accent text-white px-8 py-3 rounded-full font-bold hover:bg-brand-accent-hover shadow-md">View Personalized Suggestions</button>
+                        <h2 class="font-heading text-3xl font-bold mb-4">${resultData.persona}</h2>
+                        <p class="text-xl text-gray-700 mb-3 font-semibold">${resultData.title}</p>
+                        <p class="text-gray-600 mb-8 text-lg">${resultData.description}</p>
+                        <button id="reveal-persona-btn" 
+                                class="bg-brand-accent text-white px-8 py-4 rounded-full font-bold hover:bg-brand-accent-hover shadow-md transform hover:scale-105 transition-transform duration-200">
+                            View Personalized Suggestions
+                        </button>
                     </div>
                 `;
 
-                // --- FIX: All redundant event listener code has been removed from here. ---
-                // The main 'quizClickListener' now handles the 'reveal-persona-btn' click.
+                // Ensure the button is visible
+                const revealBtn = container.querySelector('#reveal-persona-btn');
+                if (revealBtn) {
+                    console.log('Reveal button rendered successfully'); // Debug log
+                    revealBtn.focus(); // Make it clear where to click next
+                } else {
+                    console.error('Failed to find reveal button after render');
+                }
+
+                // The click handler is now managed by the delegated quizClickListener
             }
             
             render();
