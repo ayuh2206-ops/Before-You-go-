@@ -1,0 +1,13 @@
+{
+    "name": "before-you-go",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "dev": "vercel dev",
+        "build": "vercel build",
+        "deploy": "vercel deploy --prod"
+    },
+    "dependencies": {
+        "@google/generative-ai": "^0.1.0"
+    }
+}

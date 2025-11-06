@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -37,12 +39,12 @@
                     borderRadius: { '4xl': '2rem' },
                     keyframes: {
                         fadeInUp: {
-                          '0%': { opacity: '0', transform: 'translateY(20px)' },
-                          '100%': { opacity: '1', transform: 'translateY(0)' },
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
                         },
                         fadeOutDown: {
-                          '0%': { opacity: '1', transform: 'translateY(0)' },
-                          '100%': { opacity: '0', transform: 'translateY(20px)' },
+                            '0%': { opacity: '1', transform: 'translateY(0)' },
+                            '100%': { opacity: '0', transform: 'translateY(20px)' },
                         }
                     },
                     animation: {
@@ -114,8 +116,18 @@
                 <a href="#how-it-works" class="text-gray-600 hover:text-brand-primary transition duration-300">Process</a>
                 <a href="#inspiration" class="text-gray-600 hover:text-brand-primary transition duration-300">Inspiration</a>
                 <div id="auth-container" class="flex items-center gap-4">
+                    <!-- Login/Signup Button -->
                     <button data-modal-trigger="login-modal" id="login-btn" class="text-gray-600 hover:text-brand-primary transition duration-300 font-medium">Login / Sign Up</button>
-                    <span id="user-profile" class="hidden text-brand-primary font-medium"></span>
+                    
+                    <!-- User Profile Section -->
+                    <div id="user-profile" class="hidden">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-full bg-brand-primary text-white flex items-center justify-center font-bold text-sm uppercase" id="profile-icon"></div>
+                            <span class="text-brand-primary font-medium" id="profile-name"></span>
+                        </div>
+                    </div>
+                    
+                    <!-- Logout Button -->
                     <button id="logout-btn" class="hidden bg-gray-200 text-gray-700 px-4 py-1.5 rounded-full font-semibold hover:bg-gray-300 transition-all duration-300 text-sm">Logout</button>
                 </div>
                 <button data-modal-trigger="quiz-modal" class="bg-brand-accent text-white px-6 py-2.5 rounded-full font-semibold hover:bg-brand-accent-hover transition-all duration-300 shadow-md transform hover:scale-105">Find Your Trip</button>
@@ -183,7 +195,7 @@
                     <p class="text-lg text-gray-600 mt-4">Every detail, personalized for you.</p>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                     <!-- Feature Cards -->
+                      <!-- Feature Cards -->
                     <div class="bg-brand-light p-8 rounded-2xl card-hover">
                         <h3 class="font-heading text-xl font-bold text-brand-dark mb-2">AI Predictive Recommendations ✨</h3>
                         <p class="text-gray-600">Our engine uses live web data to suggest destinations you’re destined to love.</p>
@@ -299,17 +311,30 @@
             <!-- Login Form -->
             <div id="login-tab" class="auth-tab-content">
                 <h2 class="font-heading text-3xl font-bold text-brand-dark text-center">Welcome Back</h2>
-                <form id="login-form" class="mt-8 space-y-6">
+                <form id="login-form" class="mt-8 space-y-6" novalidate>
                     <div>
                         <label for="login-email" class="text-sm font-medium text-gray-700">Email</label>
-                        <input id="login-email" name="email" type="email" required class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-brand-primary focus:border-brand-primary">
+                        <input id="login-email" 
+                               name="email" 
+                               type="email" 
+                               required 
+                               autocomplete="email"
+                               class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-brand-primary focus:border-brand-primary">
                     </div>
                     <div>
                         <label for="login-password" class="text-sm font-medium text-gray-700">Password</label>
-                        <input id="login-password" name="password" type="password" required class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-brand-primary focus:border-brand-primary">
+                        <input id="login-password" 
+                               name="password" 
+                               type="password" 
+                               required 
+                               autocomplete="current-password"
+                               class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-brand-primary focus:border-brand-primary">
                     </div>
-                    <div id="login-error" class="text-red-600 text-sm"></div>
-                    <button type="submit" class="w-full btn-gradient text-white font-bold py-3 px-4 rounded-full flex items-center justify-center gap-2">Login</button>
+                    <div id="login-error" class="text-red-600 text-sm min-h-[20px]"></div>
+                    <button type="submit" 
+                            class="w-full btn-gradient text-white font-bold py-3 px-4 rounded-full flex items-center justify-center gap-2">
+                        <span>Login</span>
+                    </button>
                 </form>
             </div>
 
@@ -416,6 +441,20 @@
         </div>
     </div>
 
+    <!-- 
+      These script tags are marked as 'module' but are in your 'public' folder. 
+      For Vercel to serve them correctly with your vercel.json, 
+      the 'src' paths should be relative to the 'public' folder.
+      When the browser requests '/config/api-keys.js', 
+      Vercel's route will serve '/public/config/api-keys.js'.
+      
+      This assumes your vercel.json route is:
+      { "src": "/(.*)", "dest": "/public/$1" }
+      
+      If your HTML file is *also* in the public folder, the paths are correct as-is.
+      If your HTML file is in the *root* and served from public,
+      you might need to adjust paths to './config/api-keys.js'
+    -->
     <script type="module" src="./config/api-keys.js"></script>
     <script type="module" src="./utils/fetch.js"></script>
     <script type="module" src="./utils/cache.js"></script>
@@ -426,7 +465,7 @@
         let db, auth;
         let currentUserId = null;
         
-        const userState = {
+        let userState = {
             name: null,
             persona: null,
             tripPreferences: {
@@ -454,15 +493,49 @@
 
         // Initialize Firebase
         try {
-            if (firebase.apps.length === 0) {
+            if (!firebase.apps.length) {
                 firebase.initializeApp(firebaseConfig);
+                auth = firebase.auth();
+                db = firebase.firestore();
+                
+                // Enable debug logging and persistence
+                firebase.firestore().enablePersistence()
+                    .catch((err) => {
+                        if (err.code == 'failed-precondition') {
+                            console.warn('Persistence failed: multiple tabs open');
+                        } else if (err.code == 'unimplemented') {
+                            console.warn('Persistence not available in this browser');
+                        }
+                    });
+                
+                firebase.firestore().setLogLevel('debug');
+                console.log("Firebase Initialized Successfully");
+                
+                // Monitor auth state (THIS IS THE LATER ONE, THE DOMCONTENTLOADED ONE IS NOW THE PRIMARY)
+                auth.onAuthStateChanged((user) => {
+                    if (user) {
+                        console.log("Auth state: User logged in", {
+                            uid: user.uid,
+                            email: user.email,
+                            emailVerified: user.emailVerified
+                        });
+                        // Set currentUserId for the app
+                        currentUserId = user.uid;
+                    } else {
+                        console.log("Auth state: User logged out");
+                        // Clear currentUserId
+                        currentUserId = null;
+                        // Reset userState
+                        userState = { name: null, persona: null, tripPreferences: {} };
+                    }
+                });
+            } else {
+                auth = firebase.auth();
+                db = firebase.firestore();
             }
-            auth = firebase.auth();
-            db = firebase.firestore();
-            firebase.firestore().setLogLevel('debug');
-            console.log("Firebase Initialized Successfully with your project config.");
         } catch (e) {
             console.error("Error initializing Firebase:", e);
+            alert("Could not connect to the server. Please check your internet connection.");
         }
 
         // --- 1. AUTHENTICATION LOGIC ---
@@ -479,12 +552,15 @@
             try {
                 const userCredential = await auth.createUserWithEmailAndPassword(email, password);
                 const user = userCredential.user;
-                // Now save the extra data to Firestore
-                await saveUserProfile(user.uid, { name: name, email: email, persona: null });
-                userState.name = name; // Update local state
-                closeModal(document.getElementById('login-modal'));
                 
-                // ** NEW SEAMLESS ONBOARDING FLOW **
+                // Save user data and update UI
+                const userData = { name: name, email: email, persona: null };
+                await saveUserProfile(user.uid, userData);
+                userState.name = name;
+                updateUIForLoggedInUser(userData);
+                
+                // Close login modal and open quiz
+                closeModal(document.getElementById('login-modal'));
                 const quizModal = document.getElementById('quiz-modal');
                 openModal(quizModal);
                 loadPersonaQuiz(quizModal);
@@ -497,18 +573,101 @@
         
         async function handleLogin(e) {
             e.preventDefault();
-            console.log("Attempting to LOGIN"); // Debug log
+            console.log("Login function called"); // Debug log
+
+            // Get form elements
+            const form = e.target;
             const loginError = document.getElementById('login-error');
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
+            const emailInput = document.getElementById('login-email');
+            const passwordInput = document.getElementById('login-password');
+            const submitBtn = form.querySelector('button[type="submit"]');
+
+            if (!emailInput || !passwordInput || !submitBtn) {
+                console.error('Login form elements not found');
+                return;
+            }
+
+            const email = emailInput.value;
+            const password = passwordInput.value;
+
+            if (!email || !password) {
+                loginError.textContent = 'Please enter both email and password';
+                return;
+            }
+
+            // Reset error message and disable form
             loginError.textContent = '';
-            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<div class="spinner mr-2"></div> Logging in...';
+            emailInput.disabled = true;
+            passwordInput.disabled = true;
+
+            console.log("Attempting login with email:", email); // Debug log
+
             try {
-                await auth.signInWithEmailAndPassword(email, password);
-                closeModal(document.getElementById('login-modal'));
+                // Use Promise.race to implement a cancellable timeout for the auth call
+                const authPromise = auth.signInWithEmailAndPassword(email, password);
+                const timeoutPromise = new Promise((_, reject) => {
+                    const t = setTimeout(() => reject(new Error('Login timeout. Please try again.')), 15000);
+                    // clearTimeout will be handled implicitly when authPromise resolves
+                });
+
+                console.log("Calling Firebase auth..."); // Debug log
+                const userCredential = await Promise.race([authPromise, timeoutPromise]);
+                console.log("Firebase auth successful"); // Debug log
+
+                if (!userCredential || !userCredential.user) {
+                    throw new Error('Login failed: no user returned');
+                }
+
+                const user = userCredential.user;
+                console.log("Got user:", user.uid); // Debug log
+
+                // Ensure currentUserId is set promptly for UI guards
+                currentUserId = user.uid;
+
+                // Load user profile
+                const userRef = db.collection('artifacts').doc(appId).collection('users').doc(user.uid);
+                console.log("Fetching user data..."); // Debug log
+                const doc = await userRef.get();
+
+                if (doc.exists) {
+                    const userData = doc.data();
+                    console.log("User data loaded:", userData); // Debug log
+
+                    // Update application state
+                    userState.name = userData.name;
+                    userState.persona = userData.persona;
+
+                    // Update UI
+                    updateUIForLoggedInUser(userData);
+
+                    // Close modal
+                    const loginModal = document.getElementById('login-modal');
+                    if (loginModal) {
+                        closeModal(loginModal);
+                    } else {
+                        console.error('Login modal not found');
+                    }
+                } else {
+                    console.log("No user data found, creating profile..."); // Debug log
+                    const userData = {
+                        name: email.split('@')[0],
+                        email: email,
+                        persona: null
+                    };
+                    await saveUserProfile(user.uid, userData);
+                    updateUIForLoggedInUser(userData);
+                }
             } catch (error) {
-                console.error("Error logging in:", error);
-                loginError.textContent = error.message;
+                console.error("Login error:", error); // Debug log
+                loginError.textContent = error.message || 'Login failed. Please try again.';
+            } finally {
+                // Always make sure the form is enabled again
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span>Login</span>';
+                emailInput.disabled = false;
+                passwordInput.disabled = false;
             }
         }
 
@@ -517,19 +676,60 @@
         }
 
         function updateUIForLoggedInUser(profileData) {
-            document.getElementById('login-btn').classList.add('hidden');
+            console.log('Updating UI for logged in user:', profileData); // Debug log
+            
+            // Hide login buttons
+            const loginBtn = document.getElementById('login-btn');
+            const mobileLoginBtn = document.getElementById('mobile-login-btn');
+            if (loginBtn) loginBtn.classList.add('hidden');
+            if (mobileLoginBtn) mobileLoginBtn.classList.add('hidden');
+            
+            // Show and update user profile
             const userProfile = document.getElementById('user-profile');
-            userProfile.classList.remove('hidden');
-            userProfile.textContent = `Hi, ${profileData.name || 'User'}`;
-            document.getElementById('logout-btn').classList.remove('hidden');
-            document.getElementById('mobile-login-btn').classList.add('hidden');
+            const profileIcon = document.getElementById('profile-icon');
+            const profileName = document.getElementById('profile-name');
+            
+            if (userProfile && profileIcon && profileName) {
+                const userName = profileData.name || 'User';
+                const userInitial = userName.charAt(0).toUpperCase();
+                
+                userProfile.classList.remove('hidden');
+                profileIcon.textContent = userInitial;
+                profileName.textContent = `Hi, ${userName}`;
+                
+                console.log('Profile updated with:', { initial: userInitial, name: userName }); // Debug log
+            } else {
+                console.error('Could not find profile elements:', { 
+                    userProfile: !!userProfile, 
+                    profileIcon: !!profileIcon, 
+                    profileName: !!profileName 
+                });
+            }
+            
+            // Show logout button
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) logoutBtn.classList.remove('hidden');
         }
 
         function updateUIForLoggedOutUser() {
-            document.getElementById('login-btn').classList.remove('hidden');
-            document.getElementById('user-profile').classList.add('hidden');
-            document.getElementById('logout-btn').classList.add('hidden');
-            document.getElementById('mobile-login-btn').classList.remove('hidden');
+            console.log('Updating UI for logged out user'); // Debug log
+            
+            // Show login buttons
+            const loginBtn = document.getElementById('login-btn');
+            const mobileLoginBtn = document.getElementById('mobile-login-btn');
+            if (loginBtn) loginBtn.classList.remove('hidden');
+            if (mobileLoginBtn) mobileLoginBtn.classList.remove('hidden');
+            
+            // Hide user profile
+            const userProfile = document.getElementById('user-profile');
+            const logoutBtn = document.getElementById('logout-btn');
+            
+            if (userProfile) userProfile.classList.add('hidden');
+            if (logoutBtn) logoutBtn.classList.add('hidden');
+            
+            // Clear profile info
+            const profileName = document.getElementById('profile-name');
+            if (profileName) profileName.textContent = '';
         }
 
         // --- 2. FIRESTORE DATABASE LOGIC ---
@@ -622,11 +822,31 @@
                 }
             });
             
-            document.getElementById('login-form').addEventListener('submit', handleLogin);
-            document.getElementById('signup-form').addEventListener('submit', handleSignUp);
+            const loginForm = document.getElementById('login-form');
+            const signupForm = document.getElementById('signup-form');
             
-            document.getElementById('login-tab-btn').addEventListener('click', () => switchAuthTab('login'));
-            document.getElementById('signup-tab-btn').addEventListener('click', () => switchAuthTab('signup'));
+            if (loginForm) {
+                loginForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    console.log('Login form submitted');
+                    handleLogin(e);
+                });
+            } else {
+                console.error('Login form not found');
+            }
+            
+            if (signupForm) {
+                signupForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    console.log('Signup form submitted');
+                    handleSignUp(e);
+                });
+            } else {
+                console.error('Signup form not found');
+            }
+            
+            document.getElementById('login-tab-btn')?.addEventListener('click', () => switchAuthTab('login'));
+            document.getElementById('signup-tab-btn')?.addEventListener('click', () => switchAuthTab('signup'));
         }
         
         function switchAuthTab(tab) {
@@ -802,7 +1022,7 @@
             // **FIXED**: Use event delegation
             // We only attach *one* listener to the container, which never gets destroyed.
             // This ensures buttons always work after re-rendering.
-            const quizClickListener = (e) => {
+            const quizClickListener = async (e) => {
                 const targetOption = e.target.closest('.quiz-option');
                 if (targetOption) {
                     userAnswers[currentQuestionIndex] = parseInt(targetOption.getAttribute('data-option-index'));
@@ -822,6 +1042,26 @@
                     }
                     return;
                 }
+                
+                // --- THIS IS THE FIX ---
+                // Add this block to handle the results button
+                if (e.target.closest('#reveal-persona-btn')) {
+                    const quizModal = document.getElementById('quiz-modal');
+                    if (quizModal) {
+                        closeModal(quizModal); // Use your existing closeModal function
+                    }
+                    
+                    // Then load inspirations and scroll
+                    setTimeout(() => {
+                        loadDynamicInspirations();
+                        const inspirationSection = document.getElementById('inspiration');
+                        if (inspirationSection) {
+                            inspirationSection.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    }, 300); // 300ms delay for the modal to close
+                    return;
+                }
+                // --- END OF FIX ---
             };
             
             // Remove old listener if it exists, then add the new one
@@ -895,11 +1135,18 @@
             }
             
             function renderResults(resultData, container) {
-                // This function used to have a delay, now it's instant
-                const quizModal = document.getElementById('quiz-modal');
-                closeModal(quizModal);
-                loadDynamicInspirations(); // Load new AI inspirations
-                document.getElementById('inspiration').scrollIntoView({ behavior: 'smooth' });
+                // Show the persona result inside the quiz modal
+                container.innerHTML = `
+                    <div class="p-8 text-center">
+                        <h2 class="font-heading text-2xl font-bold mb-4">${resultData.persona}</h2>
+                        <p class="text-lg text-gray-700 mb-3 font-semibold">${resultData.title}</p>
+                        <p class="text-gray-600 mb-8">${resultData.description}</p>
+                        <button id="reveal-persona-btn" class="bg-brand-accent text-white px-8 py-3 rounded-full font-bold hover:bg-brand-accent-hover shadow-md">View Personalized Suggestions</button>
+                    </div>
+                `;
+
+                // --- FIX: All redundant event listener code has been removed from here. ---
+                // The main 'quizClickListener' now handles the 'reveal-persona-btn' click.
             }
             
             render();
@@ -1061,12 +1308,12 @@
                                     <h4 class="font-semibold mb-2">Flight Options</h4>
                                     <div class="space-y-2">
                                         ${dest.flights.map((f,i)=>`
-                                            <div class=\\"p-3 border rounded-xl flex items-center justify-between\\">
+                                            <div class=\"p-3 border rounded-xl flex items-center justify-between\">
                                                 <div>
-                                                    <div class=\\"font-medium\\">$${f.price} ${f.currency || ''}</div>
-                                                    <div class=\\"text-sm text-gray-600\\">${(f.itineraries?.[0]?.segments?.[0]?.from || '')} → ${(f.itineraries?.[0]?.segments?.slice(-1)[0]?.to || '')} · ${f.itineraries?.[0]?.duration || ''}</div>
+                                                    <div class=\"font-medium\">$${f.price} ${f.currency || ''}</div>
+                                                    <div class=\"text-sm text-gray-600\">${(f.itineraries?.[0]?.segments?.[0]?.from || '')} → ${(f.itineraries?.[0]?.segments?.slice(-1)[0]?.to || '')} · ${f.itineraries?.[0]?.duration || ''}</div>
                                                 </div>
-                                                <button data-flight='${JSON.stringify({ idx:index, option:i })}' class=\\"select-flight-btn bg-gray-800 text-white px-3 py-1.5 rounded-full text-sm\\">Select Flight</button>
+                                                <button data-flight='${JSON.stringify({ idx:index, option:i })}' class=\"select-flight-btn bg-gray-800 text-white px-3 py-1.5 rounded-full text-sm\">Select Flight</button>
                                             </div>
                                         `).join('')}
                                     </div>
@@ -1076,12 +1323,12 @@
                                     <h4 class="font-semibold mb-2">Hotel Options</h4>
                                     <div class="space-y-2">
                                         ${dest.hotels.map((h,i)=>`
-                                            <div class=\\"p-3 border rounded-xl flex items-center justify-between\\">
+                                            <div class=\"p-3 border rounded-xl flex items-center justify-between\">
                                                 <div>
-                                                    <div class=\\"font-medium\\">${h.name}</div>
-                                                    <div class=\\"text-sm text-gray-600\\">$${h.pricePerNight || ''} ${h.currency || ''} / night · ⭐ ${h.rating || '-'} </div>
+                                                    <div class=\"font-medium\">${h.name}</div>
+                                                    <div class=\"text-sm text-gray-600\">$${h.pricePerNight || ''} ${h.currency || ''} / night · ⭐ ${h.rating || '-'} </div>
                                                 </div>
-                                                <button data-hotel='${JSON.stringify({ idx:index, option:i })}' class=\\"select-hotel-btn bg-gray-800 text-white px-3 py-1.5 rounded-full text-sm\\">Select Hotel</button>
+                                                <button data-hotel='${JSON.stringify({ idx:index, option:i })}' class=\"select-hotel-btn bg-gray-800 text-white px-3 py-1.5 rounded-full text-sm\">Select Hotel</button>
                                             </div>
                                         `).join('')}
                                     </div>
@@ -1364,30 +1611,22 @@
         };
 
         async function callGemini(prompt, systemInstruction, tools = null, generationConfig = null) {
-            const apiKey = ""; // API key will be handled by the environment
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-
-            const payload = {
-                contents: [{ parts: [{ text: prompt }] }],
-                systemInstruction: { parts: [{ text: systemInstruction }] }
-            };
-
-            if (tools) {
-                payload.tools = tools;
-            }
-            if (generationConfig) {
-                payload.generationConfig = generationConfig;
-            }
-
             try {
+                console.log('Calling /api/gemini with:', { prompt, systemInstruction });
+
                 // Add exponential backoff for retries
                 let response;
                 let delay = 1000;
                 for (let i = 0; i < 5; i++) {
-                    response = await fetch(apiUrl, {
+                    response = await fetch('/api/gemini', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
+                        body: JSON.stringify({
+                            prompt,
+                            systemPrompt: systemInstruction,
+                            tools: tools || [],
+                            generationConfig: generationConfig || {}
+                        })
                     });
 
                     if (response.ok) {
@@ -1399,7 +1638,8 @@
                         delay *= 2;
                     } else {
                         // Other client error, don't retry
-                        console.error("API Error Response:", await response.text());
+                        const errorText = await response.text();
+                        console.error("API Error Response:", errorText);
                         return { error: true, content: `<p class="text-red-500">Error: The travel AI is currently unavailable. Please try again later.</p>` };
                     }
                 }
@@ -1410,23 +1650,21 @@
                 }
 
                 const result = await response.json();
-                const candidate = result.candidates?.[0];
-                if (candidate && candidate.content?.parts?.[0]?.text) {
-                    const text = candidate.content.parts[0].text;
-                    if (generationConfig?.responseMimeType === "application/json") {
-                        try {
-                            return { error: false, content: JSON.parse(text) }; // Return parsed JSON
-                        } catch(e) {
-                            console.error("Failed to parse AI JSON response:", text, e);
-                            return { error: true, content: `<p class="text-red-500">The AI returned an invalid response. Please try again.</p>` };
-                        }
-                    } else {
-                        return { error: false, content: marked.parse(text) }; // Return parsed Markdown
-                    }
-                } else {
-                    console.error("Invalid API response structure:", result);
-                    return { error: true, content: `<p class="text-red-500">Sorry, I couldn't generate a response. The AI might be busy.</p>` };
+                if (result.error) {
+                    console.error("API returned error:", result.error);
+                    return { error: true, content: `<p class="text-red-500">Error: ${result.error}</p>` };
                 }
+
+                if (result.content) {
+                    if (generationConfig?.responseMimeType === "application/json") {
+                        return { error: false, content: result.content }; // Already JSON from API
+                    } else {
+                        return { error: false, content: marked.parse(result.content) }; // Parse markdown
+                    }
+                }
+
+                console.error("Invalid API response structure:", result);
+                return { error: true, content: `<p class="text-red-500">Sorry, I couldn't generate a response. The AI might be busy.</p>` };
             } catch (error) {
                 console.error("Fetch Error:", error);
                 return { error: true, content: `<p class="text-red-500">An error occurred while contacting the travel AI. Please check your connection.</p>` };
@@ -1564,7 +1802,7 @@
                     userState.persona = null;
                     userState.name = null;
                     updateUIForLoggedOutUser();
-                    renderDefaultInspirations(); //Reset to default
+                    renderDefaultInspirations(); //git commit -m "Final Vercel trigger"
                 }
             });
         });
