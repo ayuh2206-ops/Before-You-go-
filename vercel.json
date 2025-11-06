@@ -20,16 +20,5 @@
       "dest": "/public/$1"
     }
   ],
-  "env": {
-    "AMADEUS_CLIENT_ID": "@amadeus_client_id",
-    "AMADEUS_CLIENT_SECRET": "@amadeus_client_secret",
-    "RAPIDAPI_KEY": "@rapidapi_key",
-    "PREDICTHQ_API_KEY": "@predicthq_api_key",
-    "TICKETMASTER_API_KEY": "@ticketmaster_api_key",
-    "OPENWEATHER_API_KEY": "@openweather_api_key",
-    "GEMINI_API_KEY": "@gemini_api_key",
-    "FIREBASE_API_KEY": "@firebase_api_key",
-    "FIREBASE_PROJECT_ID": "@firebase_project_id",
-    "GOOGLE_PLACES_API_KEY": "@google_places_api_key"
-  }
+  
 }
