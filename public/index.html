@@ -1640,13 +1640,13 @@
 
         async function callGemini(prompt, systemInstruction, tools = null, generationConfig = null) {
             try {
-                console.log('Calling /api/gemini with:', { prompt, systemInstruction });
+                console.log('Calling /api/gemini-direct with:', { prompt, systemInstruction });
 
                 // Add exponential backoff for retries
                 let response;
                 let delay = 1000;
                 for (let i = 0; i < 5; i++) {
-                    response = await fetch('/api/gemini', {
+                    response = await fetch('/api/gemini-direct', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({

@@ -35,6 +35,8 @@ export default async function handler(request, response) {
       payload.generationConfig = generationConfig;
     }
 
+    console.log('Calling Gemini API with payload:', JSON.stringify(payload, null, 2));
+
     // Call the actual Google Gemini API
     const geminiResponse = await fetch(apiUrl, {
       method: 'POST',
@@ -55,9 +57,16 @@ export default async function handler(request, response) {
     
     // Check if the response was JSON (from schema) or plain text
     if (generationConfig?.responseMimeType === "application/json") {
-        // The API returns a string, so we must parse it before sending
-        response.status(200).json({ content: JSON.parse(text) });
+        try {
+            const jsonContent = JSON.parse(text);
+            console.log('Successfully parsed JSON response:', jsonContent);
+            response.status(200).json({ content: jsonContent });
+        } catch (e) {
+            console.error('Failed to parse JSON response:', text);
+            throw new Error('Invalid JSON response from Gemini API');
+        }
     } else {
+        console.log('Returning text response:', text?.substring(0, 100) + '...');
         response.status(200).json({ content: text });
     }
 
