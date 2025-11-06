@@ -462,6 +462,7 @@
 
     <script>
         // --- 0. FIREBASE & GLOBAL STATE ---
+       document.addEventListener('DOMContentLoaded', () => {
         let db, auth;
         let currentUserId = null;
         
@@ -1814,7 +1815,7 @@
         }
         
         // --- 8. INITIALIZE APP ---
-        document.addEventListener('DOMContentLoaded', () => {
+        
             // **FIX**: Initialize all event listeners *after* DOM is loaded
             initializeAppEventListeners();
 
