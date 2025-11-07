@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
@@ -13,12 +12,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- For parsing Gemini's Markdown responses -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-   
-    <!-- *** NEW: Firebase SDKs *** -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-   
+    
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        // This is the one file we need, so we'll import everything we need in the main script
+    </script>
+
     <!-- Brand Configuration -->
     <script>
         tailwind.config = {
@@ -69,10 +69,12 @@
         .modal { display: none; }
         .modal.is-open { display: flex; }
         .modal-content { animation: fadeInUp 0.5s ease-out forwards; }
-        .prose h2 { margin-top: 2em; margin-bottom: 1em; font-family: 'Lexend', sans-serif; font-weight: 700; color: #1F2937; }
-        .prose h3 { margin-top: 1.5em; margin-bottom: 0.5em; font-family: 'Lexend', sans-serif; font-weight: 600; color: #1F2937; }
-        .prose p, .prose li { color: #4B5563; line-height: 1.75; }
-        .prose a { color: #14B8A6; }
+        .prose h2, .gemini-content h2 { margin-top: 2em; margin-bottom: 1em; font-family: 'Lexend', sans-serif; font-weight: 700; color: #1F2937; }
+        .prose h3, .gemini-content h3 { margin-top: 1.5em; margin-bottom: 0.5em; font-family: 'Lexend', sans-serif; font-weight: 600; color: #1F2937; font-size: 1.25rem;}
+        .prose p, .prose li, .gemini-content p, .gemini-content li { color: #4B5563; line-height: 1.75; }
+        .prose a, .gemini-content a { color: #14B8A6; }
+        .gemini-content ul { list-style-type: disc; list-style-position: inside; }
+        .gemini-content ol { list-style-type: decimal; list-style-position: inside; }
         .itinerary-day { border-left: 3px solid #14B8A6; padding-left: 1.5rem; margin-top: 1.5rem; }
         .trip-details { max-height: 0; overflow: hidden; transition: max-height 0.7s ease-in-out; }
         .spinner { border: 4px solid rgba(0, 0, 0, 0.1); width: 24px; height: 24px; border-radius: 50%; border-left-color: #14B8A6; animation: spin 1s ease infinite; }
@@ -80,30 +82,19 @@
         /* Styling for generated markdown content */
         .gemini-content h3 { font-family: 'Lexend', sans-serif; font-size: 1.25rem; font-weight: 600; color: #1F2937; margin-top: 1.5em; }
         .gemini-content p { color: #4B5563; }
-        .gemini-content ul { list-style-position: inside; list-style-type: disc; }
+        .gemini-content ul { list-style-position: inside; }
         .gemini-content li { margin-bottom: 0.5em; }
-       
-        /* Helper class to make <a> tags look like buttons */
-        .btn-like {
-            display: inline-block;
-            text-align: center;
-            padding-top: 0.5rem;
-            padding-bottom: 0.5rem;
-            padding-left: 1rem;
-            padding-right: 1rem;
-            border-radius: 9999px;
-            font-weight: 700;
-            transition: background-color 0.3s;
-        }
-        /* *** NEW: Helper for auth form tabs *** */
-        .auth-tab.active {
-            border-color: #14B8A6;
-            color: #14B8A6;
-        }
+        /* New class to make proxy modal appear on top */
+        .z-60 { z-index: 60; }
+        /* Hide scrollbar for chat window, but keep scrollable */
+        #ai-buddy-chat-window::-webkit-scrollbar,
+        #my-itinerary-content::-webkit-scrollbar { display: none; }
+        #ai-buddy-chat-window,
+        #my-itinerary-content { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="bg-brand-light text-brand-dark font-sans">
-   
+    
     <!-- Header -->
     <header class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50">
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
@@ -111,17 +102,29 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
                 Before You Go
             </a>
-            <nav class="hidden md:flex items-center space-x-8 font-medium">
+            <nav class="hidden md:flex items-center space-x-6 font-medium">
                 <a href="#features" class="text-gray-600 hover:text-brand-primary transition duration-300">Features</a>
                 <a href="#how-it-works" class="text-gray-600 hover:text-brand-primary transition duration-300">Process</a>
                 <a href="#inspiration" class="text-gray-600 hover:text-brand-primary transition duration-300">Inspiration</a>
-                <button data-modal-trigger="quiz-modal" class="bg-brand-accent text-white px-6 py-2.5 rounded-full font-semibold hover:bg-brand-accent-hover transition-all duration-300 shadow-md transform hover:scale-105">Find Your Trip</button>
-               
-                <!-- *** NEW: Auth Status Section *** -->
-                <div id="auth-status" class="flex items-center space-x-4">
-                    <!-- This will be populated by Firebase script -->
-                    <div class="spinner"></div> <!-- Show spinner while loading -->
+                
+                <!-- "My Itinerary" Button -->
+                <button id="my-itinerary-btn" data-modal-trigger="my-itinerary-modal" class="hidden text-brand-primary font-semibold px-4 py-2 rounded-full hover:bg-brand-primary-light transition-all duration-300">
+                    My Itinerary
+                </button>
+
+                <!-- Auth Status Container -->
+                <div id="auth-status" class="flex items-center">
+                    <div id="auth-loading" class="w-6 h-6 rounded-full animate-spin border-4 border-dashed border-brand-primary border-t-transparent"></div>
+                    <button id="auth-signin-btn" data-modal-trigger="auth-modal" class="hidden bg-brand-primary text-white px-5 py-2 rounded-full font-semibold hover:bg-brand-primary-dark transition-all duration-300">
+                        Sign In
+                    </button>
+                    <div id="auth-user-info" class="hidden flex items-center gap-4">
+                        <span id="auth-user-id" class="text-sm text-gray-600 font-medium"></span>
+                        <button id="auth-signout-btn" class="text-sm text-gray-500 hover:text-brand-accent font-semibold">Sign Out</button>
+                    </div>
                 </div>
+                
+                <button data-modal-trigger="quiz-modal" class="bg-brand-accent text-white px-6 py-2.5 rounded-full font-semibold hover:bg-brand-accent-hover transition-all duration-300 shadow-md transform hover:scale-105">Find Your Trip</button>
             </nav>
             <button id="mobile-menu-btn" class="md:hidden text-gray-600"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg></button>
         </div>
@@ -129,11 +132,22 @@
              <a href="#features" class="block py-2 text-gray-600 hover:text-brand-primary">Features</a>
              <a href="#how-it-works" class="block py-2 text-gray-600 hover:text-brand-primary">Process</a>
              <a href="#inspiration" class="block py-2 text-gray-600 hover:text-brand-primary">Inspiration</a>
-             <button data-modal-trigger="quiz-modal" class="block w-full text-center mt-2 bg-brand-accent text-white px-4 py-2 rounded-full font-semibold hover:bg-brand-accent-hover">Find Your Trip</button>
-             <!-- *** NEW: Auth Status for Mobile *** -->
-             <div id="auth-status-mobile" class="mt-4 pt-4 border-t border-gray-200">
-                 <div class="spinner"></div>
+             
+             <!-- Mobile "My Itinerary" Button -->
+             <button id="my-itinerary-btn-mobile" data-modal-trigger="my-itinerary-modal" class="hidden w-full text-center mt-2 text-brand-primary font-semibold px-4 py-2 rounded-full hover:bg-brand-primary-light">
+                My Itinerary
+             </button>
+
+             <!-- Mobile Auth Buttons -->
+             <button id="auth-signin-btn-mobile" data-modal-trigger="auth-modal" class="hidden w-full text-center mt-2 bg-brand-primary text-white px-4 py-2 rounded-full font-semibold">
+                Sign In
+             </button>
+             <div id="auth-user-info-mobile" class="hidden mt-2 text-center">
+                <span id="auth-user-id-mobile" class="text-sm text-gray-600 font-medium"></span>
+                <button id="auth-signout-btn-mobile" class="block w-full text-center mt-2 text-gray-500 hover:text-brand-accent font-semibold">Sign Out</button>
              </div>
+
+             <button data-modal-trigger="quiz-modal" class="block w-full text-center mt-2 bg-brand-accent text-white px-4 py-2 rounded-full font-semibold hover:bg-brand-accent-hover">Find Your Trip</button>
         </div>
     </header>
 
@@ -174,13 +188,13 @@
                         <button data-modal-trigger="journey-modal" class="group flex flex-col items-center card-hover bg-gray-50 p-8 rounded-3xl text-left">
                             <div class="h-20 w-20 flex items-center justify-center mb-6"><svg class="h-16 w-16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 18h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" stroke="#14B8A6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="8" r="1" fill="#F97316"/></svg></div>
                             <h3 class="font-heading text-2xl font-semibold text-brand-dark mb-3">3. Journey Seamlessly</h3>
-                            <p class="text-gray-600">Receive a live itinerary that adapts to your mood and the world around you, in real time.</p>
+                            <p class="text-gray-600">Your AI buddy has your itinerary and is ready to guide you. Ask it anything!</p>
                         </button>
                     </div>
                 </div>
             </div>
         </section>
-       
+        
         <!-- Other sections like Features, Inspiration, CTA -->
         <section id="features" class="py-24 bg-white">
             <div class="container mx-auto px-6">
@@ -195,8 +209,8 @@
                         <p class="text-gray-600">Our engine analyzes your Travel DNA to suggest destinations you’re statistically destined to love.</p>
                     </div>
                     <div class="bg-brand-light p-8 rounded-2xl card-hover">
-                        <h3 class="font-heading text-xl font-bold text-brand-dark mb-2">Mood-Based Plans</h3>
-                        <p class="text-gray-600">Feeling adventurous or calm? Instantly get an itinerary that matches your current vibe.</p>
+                        <h3 class="font-heading text-xl font-bold text-brand-dark mb-2">Firestore Data Persistence</h3>
+                        <p class="text-gray-600">Sign in to save your persona and itineraries, and pick up right where you left off, anytime.</p>
                     </div>
                     <div class="bg-brand-light p-8 rounded-2xl card-hover">
                         <h3 class="font-heading text-xl font-bold text-brand-dark mb-2">Social Sync Planning</h3>
@@ -290,6 +304,38 @@
     </footer>
 
     <!-- Modals (Initially Hidden) -->
+
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="modal fixed inset-0 bg-black bg-opacity-60 items-center justify-center p-4 z-50">
+        <div class="modal-content bg-white p-8 md:p-12 rounded-4xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto relative">
+            <button class="modal-close absolute top-4 right-4 text-gray-500 hover:text-black text-2xl">&times;</button>
+            <div class="text-center">
+                <h2 class="font-heading text-3xl font-bold text-brand-dark">Welcome Back!</h2>
+                <p class="text-gray-600 mt-2">Sign in or create an account to save your travel plans.</p>
+            </div>
+            <form id="auth-form" class="mt-8 space-y-4">
+                <div>
+                    <label for="auth-email" class="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" id="auth-email" required class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:border-brand-primary focus:ring-brand-primary">
+                </div>
+                <div>
+                    <label for="auth-password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" id="auth-password" required minlength="6" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:border-brand-primary focus:ring-brand-primary">
+                </div>
+                <p id="auth-error-message" class="text-sm text-red-600 hidden"></p>
+                <div class="flex flex-col sm:flex-row gap-4 pt-4">
+                    <button type="submit" id="auth-login-btn" class="w-full btn-gradient text-white px-6 py-3 rounded-full font-bold transition-all duration-500">
+                        Login
+                    </button>
+                    <button type="submit" id="auth-signup-btn" class="w-full bg-brand-primary text-white px-6 py-3 rounded-full font-bold hover:bg-brand-primary-dark transition-all duration-300">
+                        Sign Up
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
     <div id="quiz-modal" class="modal fixed inset-0 bg-black bg-opacity-60 items-center justify-center p-4 z-50 animate-fade-in-up">
         <div class="modal-content bg-white p-8 md:p-12 rounded-4xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
             <!-- Modal Content (Quiz) will be injected here by JavaScript -->
@@ -322,18 +368,18 @@
         </div>
     </div>
     <div id="journey-modal" class="modal fixed inset-0 bg-black bg-opacity-60 items-center justify-center p-4 z-50">
-        <div class="modal-content bg-white p-8 md:p-12 rounded-4xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto relative flex flex-col">
+        <div class="modal-content bg-white p-8 md:p-12 rounded-4xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto relative flex flex-col">
             <button class="modal-close absolute top-4 right-4 text-gray-500 hover:text-black text-2xl">&times;</button>
              <div class="prose max-w-none text-center mb-4">
-                <h2 class="font-heading text-3xl font-bold text-brand-dark">AI Travel Buddy ✨</h2>
-                <p>Ask your AI Buddy anything about your potential destinations!</p>
+                <h2 class="font-heading text-3xl font-bold text-brand-dark flex items-center justify-center gap-3">AI Travel Buddy <span class="text-4xl">✨</span></h2>
+                <p>I have your new itinerary. Ask me for packing tips, local customs, or details about your trip!</p>
             </div>
-            <div id="ai-buddy-chat-window" class="flex-grow border rounded-2xl p-4 overflow-y-auto bg-gray-50 flex flex-col space-y-4">
+            <div id="ai-buddy-chat-window" class="h-[400px] border rounded-2xl p-4 overflow-y-auto bg-gray-50 flex flex-col space-y-4">
                 <!-- Chat messages will appear here -->
-                <div class="p-3 rounded-lg bg-brand-primary-light text-brand-primary-dark self-start max-w-md">Hello! I'm your AI Travel Buddy. Once you've generated a trip plan, I can answer your questions about the destination. What would you like to know?</div>
+                <div class="p-4 rounded-t-xl rounded-br-xl bg-brand-primary-light text-brand-primary-dark self-start max-w-lg break-words">Hello! I'm your AI Travel Buddy. Once you've generated a trip plan, I can answer your questions about the destination. What would you like to know?</div>
             </div>
             <form id="ai-buddy-form" class="mt-4 flex gap-4">
-                <input type="text" id="ai-buddy-input" placeholder="Ask about local customs, weather..." class="w-full border-gray-300 rounded-full focus:ring-brand-primary focus:border-brand-primary" required>
+                <input type="text" id="ai-buddy-input" placeholder="e.g., What should I pack for Day 2?" class="w-full border-gray-300 rounded-full focus:ring-brand-primary focus:border-brand-primary" required>
                 <button type="submit" class="btn-gradient text-white px-6 py-2.5 rounded-full font-semibold flex-shrink-0">Send</button>
             </form>
         </div>
@@ -369,61 +415,74 @@
             <!-- Trip Planner Quiz / Results will be injected here -->
         </div>
     </div>
-   
-    <!-- *** NEW: Auth Modal *** -->
-    <div id="auth-modal" class="modal fixed inset-0 bg-black bg-opacity-60 items-center justify-center p-4 z-50">
-        <div class="modal-content bg-white p-8 md:p-12 rounded-4xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto relative">
-            <button class="modal-close absolute top-4 right-4 text-gray-500 hover:text-black text-2xl">&times;</button>
-           
-            <!-- Tab Buttons -->
-            <div class="flex border-b mb-6">
-                <button id="login-tab-btn" class="auth-tab active py-4 px-6 block w-1/2 font-semibold text-center border-b-2">Sign In</button>
-                <button id="signup-tab-btn" class="auth-tab py-4 px-6 block w-1/2 font-semibold text-center text-gray-500 border-b-2 border-transparent">Sign Up</button>
-            </div>
 
-            <!-- Error Message Area -->
-            <div id="auth-error" class="hidden text-red-600 bg-red-100 p-3 rounded-lg mb-4 text-sm"></div>
-
-            <!-- Login Form -->
-            <form id="login-form" class="space-y-6">
-                <div>
-                    <label for="login-email" class="block text-sm font-medium text-gray-700">Email address</label>
-                    <input type="email" id="login-email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-primary focus:border-brand-primary">
-                </div>
-                <div>
-                    <label for="login-password" class="block text-sm font-medium text-gray-700">Password</label>
-                    <input type="password" id="login-password" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-primary focus:border-brand-primary">
-                </div>
-                <div>
-                    <button type="submit" class="w-full btn-gradient text-white px-8 py-3 rounded-full font-bold transition-all duration-500 shadow-md">Sign In</button>
-                </div>
-            </form>
-
-            <!-- Sign Up Form (Hidden by default) -->
-            <form id="signup-form" class="hidden space-y-6">
-                <div>
-                    <label for="signup-email" class="block text-sm font-medium text-gray-700">Email address</label>
-                    <input type="email" id="signup-email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-primary focus:border-brand-primary">
-                </div>
-                <div>
-                    <label for="signup-password" class="block text-sm font-medium text-gray-700">Password</label>
-                    <input type="password" id="signup-password" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-primary focus:border-brand-primary">
-                </div>
-                 <div>
-                    <label for="signup-password-confirm" class="block text-sm font-medium text-gray-700">Confirm Password</label>
-                    <input type="password" id="signup-password-confirm" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-primary focus:border-brand-primary">
-                </div>
-                <div>
-                    <button type="submit" class="w-full btn-gradient text-white px-8 py-3 rounded-full font-bold transition-all duration-500 shadow-md">Create Account</button>
-                </div>
-            </form>
-
+    <!-- "My Itinerary" Modal -->
+    <div id="my-itinerary-modal" class="modal fixed inset-0 bg-black bg-opacity-60 items-center justify-center p-4 z-50">
+        <div class="modal-content bg-white p-8 md:p-12 rounded-4xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto relative flex flex-col">
+             <button class="modal-close absolute top-4 right-4 text-gray-500 hover:text-black text-2xl">&times;</button>
+             <div class="text-center mb-6">
+                <p class="font-semibold text-brand-primary">YOUR SAVED ITINERARY</p>
+                <h2 class="font-heading text-4xl font-bold text-brand-dark mt-2">Your Current Trip</h2>
+             </div>
+             <div id="my-itinerary-content" class="gemini-content prose max-w-none flex-grow overflow-y-auto">
+                <!-- Saved itinerary will be injected here -->
+             </div>
+             <div class="mt-8 pt-6 border-t flex flex-col sm:flex-row gap-4">
+                <button id="itinerary-clear-btn" class="w-full bg-red-600 text-white font-bold py-3 px-4 rounded-full hover:bg-red-700 transition-colors">
+                    Clear Itinerary (Trip is Over)
+                </button>
+                <button data-modal-trigger="journey-modal" id="itinerary-open-buddy-btn" class="w-full bg-brand-primary text-white font-bold py-3 px-4 rounded-full hover:bg-brand-primary-dark transition-colors">
+                    Open AI Buddy
+                </button>
+             </div>
         </div>
     </div>
 
 
-    <script>
-        // --- 1. STATE MANAGEMENT ---
+    <!-- Main Application Script -->
+    <script type="module">
+        // --- Firebase SDK Imports ---
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getAuth, 
+            signInAnonymously, 
+            signInWithCustomToken, 
+            onAuthStateChanged,
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword,
+            signOut
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { 
+            getFirestore, 
+            doc, 
+            setDoc, 
+            getDoc,
+            updateDoc
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- 1. CONFIGURATION ---
+
+        // This is your Gemini API key.
+        const YOUR_GEMINI_API_KEY = "AIzaSyD_uJX6JaRGIRdi-DK82bUXB9yHDS6lWjE";
+        
+        // This is your Firebase config object.
+        const YOUR_FIREBASE_CONFIG_JSON = {
+          apiKey: "AIzaSyBlb9Ye7elbpj19Y7TrHOq5eNS_02rK-44",
+          authDomain: "before-you-go-10236.firebaseapp.com",
+          projectId: "before-you-go-10236",
+          storageBucket: "before-you-go-10236.firebasestorage.app",
+          messagingSenderId: "746797011005",
+          appId: "1:746797011005:web:5cd09abe929b708d0eda54",
+          measurementId: "G-PKLHME3VJD"
+        };
+
+
+        // --- 2. GLOBAL STATE & VARIABLES ---
+        let db, auth; // Firebase services
+        let currentUserId = null; // To store the user's ID
+        let currentModal = null; // To manage which modal is open
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id'; // For Firestore path
+
         const userState = {
             persona: null,
             tripPreferences: {
@@ -432,10 +491,14 @@
                 distance: null,
                 duration: null
             },
-            lastGeneratedDestinations: [] // Will store { name, description, imageQuery }
+            lastGeneratedDestinations: [],
+            lastGeneratedItinerary: null,
+            lastGeneratedGems: null
         };
 
-        // --- 2. MODAL & UI LOGIC ---
+        // --- 3. CORE FUNCTIONS (Modals, API) ---
+
+        // --- Modal & UI Logic ---
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
         mobileMenuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
@@ -443,29 +506,34 @@
         const triggers = document.querySelectorAll('[data-modal-trigger]');
         triggers.forEach(trigger => {
             trigger.addEventListener('click', (e) => {
-                e.preventDefault(); // Prevent default button behavior
-                const modalId = trigger.getAttribute('data-modal-trigger');
-                const modal = document.getElementById(modalId);
-                openModal(modal);
-                if (modalId === 'quiz-modal') loadPersonaQuiz(modal);
-                if (modalId === 'journey-modal') setupAIBuddy();
-                if (modalId === 'auth-modal') setupAuthModal();
+                const modalId = e.currentTarget.getAttribute('data-modal-trigger');
+                openModal(document.getElementById(modalId));
             });
         });
-       
+        
         document.addEventListener('click', e => {
             if (e.target.matches('.modal') || e.target.matches('.modal-close')) {
-                const modal = e.target.closest('.modal');
-                if (modal) {
-                    closeModal(modal);
+                const modalToClose = e.target.closest('.modal');
+                if (modalToClose) {
+                    closeModal(modalToClose);
                 }
             }
         });
 
         function openModal(modal) {
             if (!modal) return;
+            // Close any currently open modal before opening a new one
+            if (currentModal) {
+                closeModal(currentModal);
+            }
             document.body.style.overflow = 'hidden';
             modal.classList.add('is-open');
+            currentModal = modal;
+            // Special handlers for dynamic modals
+            const modalId = modal.id;
+            if (modalId === 'quiz-modal') loadPersonaQuiz(modal);
+            if (modalId === 'journey-modal') setupAIBuddy();
+            if (modalId === 'my-itinerary-modal') loadMyItinerary();
         }
 
         function closeModal(modal) {
@@ -474,78 +542,151 @@
             if (document.querySelectorAll('.modal.is-open').length === 0) {
                 document.body.style.overflow = 'auto';
             }
+            if (currentModal === modal) {
+                currentModal = null;
+            }
         }
 
-        // --- 3. DYNAMIC INSPIRATION SECTION (Unchanged) ---
+        // --- Gemini API Call Function ---
+        async function callGemini(prompt, systemInstruction = "You are a helpful and creative travel assistant.", isJson = false) {
+            const apiKey = YOUR_GEMINI_API_KEY;
+            if (!apiKey) {
+                console.error("Gemini API key is missing!");
+                return `<p class="text-red-500">Error: AI configuration is missing. Please contact support.</p>`;
+            }
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+            const payload = {
+                contents: [{ parts: [{ text: prompt }] }],
+                systemInstruction: { parts: [{ text: systemInstruction }] }
+            };
+
+            if (isJson) {
+                payload.generationConfig = {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "ARRAY",
+                        items: {
+                            type: "OBJECT",
+                            properties: {
+                                "name": { "type": "STRING" },
+                                "description": { "type": "STRING" },
+                                "imageQuery": { "type": "STRING" }
+                            }
+                        }
+                    }
+                };
+            }
+
+            let retries = 3;
+            let delay = 1000;
+
+            while (retries > 0) {
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const errorBody = await response.text();
+                        console.error("API Error Response:", errorBody);
+                        throw new Error(`API Error: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    const candidate = result.candidates?.[0];
+
+                    if (candidate && candidate.content?.parts?.[0]?.text) {
+                        return candidate.content.parts[0].text;
+                    } else {
+                        console.error("Invalid API response structure:", result);
+                        throw new Error("Invalid API response structure.");
+                    }
+                } catch (error) {
+                    console.warn(`Gemini API call failed. Retrying in ${delay}ms...`, error);
+                    retries--;
+                    if (retries === 0) {
+                        console.error("Gemini API call failed after all retries.", error);
+                        return isJson ? "[]" : `<p class="text-red-500">Sorry, the AI is currently unavailable. Please try again later.</p>`;
+                    }
+                    await new Promise(res => setTimeout(res, delay));
+                    delay *= 2; // Exponential backoff
+                }
+            }
+        }
+
+        // --- 4. DYNAMIC/QUIZ LOGIC ---
+
+        // --- Dynamic Inspiration Section ---
         const inspirationCategories = {
              'explorer': [
                 { name: 'Mountain Expeditions', category: 'mountains', img: 'https://images.pexels.com/photos/691668/pexels-photo-691668.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
                 { name: 'Jungle Treks', category: 'jungle', img: 'https://images.pexels.com/photos/2739013/pexels-photo-2739013.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
-                { name: 'Coastal Discoveries', category: 'coastal', img: 'https://images.pexels.com/photos/3889853/pexels-photo-3889853.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
-                { name: 'Desert Journeys', category: 'desert', img: 'https://images.pexels.com/photos/2387623/pexels-photo-2387623.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
                 { name: 'Off-Grid Adventures', category: 'off-grid', img: 'https://images.pexels.com/photos/1687845/pexels-photo-1687845.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
-                { name: 'Volcanic Landscapes', category: 'volcanic', img: 'https://images.pexels.com/photos/13713061/pexels-photo-13713061.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' }
             ],
             'story-collector': [
                 { name: 'Historic Cities', category: 'historic', img: 'https://images.pexels.com/photos/532255/pexels-photo-532255.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
-                { name: 'Cultural Festivals', category: 'festival', img: 'https://images.pexels.com/photos/1190298/pexels-photo-1190298.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
                 { name: 'Culinary Tours', category: 'food', img: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
                 { name: 'Art & Museums', category: 'art', img: 'https://images.pexels.com/photos/802024/pexels-photo-802024.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
-                { name: 'Architectural Wonders', category: 'architecture', img: 'https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
-                { name: 'Literary Trails', category: 'literary', img: 'https://images.pexels.com/photos/1292115/pexels-photo-1292115.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' }
             ],
             'soul-seeker': [
                 { name: 'Beach Escapes', category: 'beach', img: 'https://images.pexels.com/photos/1032650/pexels-photo-1032650.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
                 { name: 'Wellness Retreats', category: 'wellness', img: 'https://images.pexels.com/photos/3768916/pexels-photo-3768916.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
                 { name: 'Lakeside Serenity', category: 'lake', img: 'https://images.pexels.com/photos/462024/pexels-photo-462024.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
-                { name: 'Spiritual Journeys', category: 'spiritual', img: 'https://images.pexels.com/photos/372328/pexels-photo-372328.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
-                { name: 'Forest Bathing', category: 'forest', img: 'https://images.pexels.com/photos/1528641/pexels-photo-1528641.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
-                { name: 'Mountain Retreats', category: 'mountain-retreat', img: 'https://images.pexels.com/photos/1287145/pexels-photo-1287145.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' }
             ],
             'thrill-chaser': [
                 { name: 'Adrenaline Sports', category: 'sports', img: 'https://images.pexels.com/photos/3764567/pexels-photo-3764567.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
                 { name: 'Epic Treks', category: 'trekking', img: 'https://images.pexels.com/photos/572897/pexels-photo-572897.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
                 { name: 'Water Adventures', category: 'water', img: 'https://images.pexels.com/photos/1684151/pexels-photo-1684151.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
-                { name: 'Winter Sports', category: 'winter', img: 'https://images.pexels.com/photos/714258/pexels-photo-714258.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
-                { name: 'Extreme Road Trips', category: 'road-trip', img: 'https://images.pexels.com/photos/2395249/pexels-photo-2395249.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
-                { name: 'Cave Diving', category: 'cave-diving', img: 'https://images.pexels.com/photos/847402/pexels-photo-847402.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' }
             ]
         };
 
-        function updateInspirationSection() {
-            if (!userState.persona) return;
+        function updateInspirationSection(persona = null) {
             const subtitle = document.getElementById('inspiration-subtitle');
             const grid = document.getElementById('inspiration-grid');
-            const categories = inspirationCategories[userState.persona];
-           
-            subtitle.textContent = `Based on your persona, here are some trip styles you might love. Select one to plan your trip!`;
+            
+            const categories = persona ? inspirationCategories[persona] : [
+                { name: 'The Explorer', category: 'explorer-default', img: 'https://images.pexels.com/photos/1562/italian-landscape-mountains-nature.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
+                { name: 'The Soul Seeker', category: 'soul-seeker-default', img: 'https://images.pexels.com/photos/1450360/pexels-photo-1450360.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' },
+                { name: 'The Story Collector', category: 'story-collector-default', img: 'https://images.pexels.com/photos/210307/pexels-photo-210307.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2' }
+            ];
+            
+            subtitle.textContent = persona 
+                ? `Based on your persona, here are some trip styles you might love. Select one to plan your trip!`
+                : `First, take the quiz to reveal your travel persona and unlock personalized suggestions!`;
+            
             grid.innerHTML = ''; // Clear default content
-            grid.classList.remove('lg:grid-cols-4', 'md:grid-cols-2');
-            grid.classList.add('lg:grid-cols-3', 'md:grid-cols-3'); // Adjust grid for 6 items
-           
+            
             categories.forEach(cat => {
-                grid.innerHTML += `
-                    <button data-category="${cat.category}" class="inspiration-card relative rounded-2xl shadow-lg overflow-hidden h-96 group card-hover text-left">
-                        <img src="${cat.img}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="${cat.name}">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
-                            <h3 class="text-white text-2xl font-heading font-bold">${cat.name}</h3>
-                        </div>
-                    </button>
+                const card = document.createElement(persona ? 'button' : 'div');
+                card.dataset.category = cat.category;
+                card.className = "inspiration-card relative rounded-2xl shadow-lg overflow-hidden h-96 group card-hover text-left";
+                if (!persona) {
+                    card.classList.add("cursor-not-allowed", "opacity-80");
+                }
+                
+                card.innerHTML = `
+                    <img src="${cat.img}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="${cat.name}">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
+                        <h3 class="text-white text-2xl font-heading font-bold">${cat.name}</h3>
+                    </div>
                 `;
-            });
+                grid.appendChild(card);
 
-            // Add event listeners to the new cards
-            document.querySelectorAll('.inspiration-card').forEach(card => {
-                card.addEventListener('click', () => {
-                    userState.tripPreferences.category = card.getAttribute('data-category');
-                    const modal = document.getElementById('trip-planner-modal');
-                    openModal(modal);
-                    loadTripPlannerQuiz(modal);
-                });
+                if (persona) {
+                    card.addEventListener('click', () => {
+                        userState.tripPreferences.category = card.getAttribute('data-category');
+                        const modal = document.getElementById('trip-planner-modal');
+                        openModal(modal);
+                        loadTripPlannerQuiz(modal);
+                    });
+                }
             });
         }
-       
-        // --- 4. PERSONA QUIZ LOGIC (Unchanged) ---
+        
+        // --- Persona Quiz Logic ---
         const personaQuizQuestions = [
             { question: "A week off just opened up. Your first thought is:", options: [ { text: "Find a hidden cabin in the mountains.", value: "explorer" }, { text: "Finally, time to visit that famous museum.", value: "story-collector" }, { text: "Book a flight somewhere warm, now!", value: "soul-seeker" }, { text: "Check for last-minute adventure deals.", value: "thrill-chaser" } ] },
             { question: "The ideal pace for a vacation day is:", options: [ { text: "Packed from sunrise to sunset with activities.", value: "thrill-chaser" }, { text: "A loose plan with plenty of room for spontaneity.", value: "explorer" }, { text: "One or two main cultural sights, with lots of cafe breaks.", value: "story-collector" }, { text: "Having zero obligations is the whole point.", value: "soul-seeker" } ] },
@@ -558,12 +699,12 @@
             { question: "You're lost in a new city. You:", options: [ { text: "Embrace it. This is where the adventure begins.", value: "explorer" }, { text: "Ask a local shopkeeper for directions and a story.", value: "story-collector" }, { text: "Use it as an opportunity to find a quiet park and relax.", value: "soul-seeker" }, { text: "See it as a race to find my way back.", value: "thrill-chaser" } ] },
             { question: "The most important part of your accommodation is:", options: [ { text: "Proximity to nature trails or adventure spots.", value: "thrill-chaser" }, { text: "A central location in a historic district.", value: "story-collector" }, { text: "Complete isolation and privacy.", value: "explorer" }, { text: "A comfortable bed and a peaceful atmosphere.", value: "soul-seeker" } ] },
             { question: "What kind of museum would you choose?", options: [ { text: "A modern art museum with challenging exhibits.", value: "story-collector" }, { text: "An outdoor museum or historical reenactment.", value: "explorer" }, { text: "A small, quirky museum about a local legend.", value: "story-collector" }, { text: "I'd rather be outside than in a museum.", value: "thrill-chaser" } ] },
-             { question: "Your ideal evening on vacation ends with:", options: [ { text: "Stargazing far from city lights.", value: "explorer" }, { text: "A quiet glass of wine and reflection.", value: "soul-seeker" }, { text: "Sharing stories with new friends at a bonfire.", value: "thrill-chaser" }, { text: "Seeing a play or a live music performance.", value: "story-collector" } ] },
+            { question: "Your ideal evening on vacation ends with:", options: [ { text: "Stargazing far from city lights.", value: "explorer" }, { text: "A quiet glass of wine and reflection.", value: "soul-seeker" }, { text: "Sharing stories with new friends at a bonfire.", value: "thrill-chaser" }, { text: "Seeing a play or a live music performance.", value: "story-collector" } ] },
             { question: "Which travel movie character are you?", options: [ { text: "Indiana Jones, searching for ancient artifacts.", value: "explorer" }, { text: "Elizabeth Gilbert in 'Eat Pray Love', on a journey of self-discovery.", value: "soul-seeker" }, { text: "James Bond, on a glamorous and action-packed mission.", value: "thrill-chaser" }, { text: "The narrator in 'Amélie', finding magic in everyday city life.", value: "story-collector" } ] },
             { question: "The best travel photos are:", options: [ { text: "Candid shots of people and daily life.", value: "story-collector" }, { text: "Epic, wide-angle landscapes with no people.", value: "explorer" }, { text: "Action shots of an activity.", value: "thrill-chaser" }, { text: "Peaceful sunrises or sunsets.", value: "soul-seeker" } ] },
             { question: "After a trip, you feel most fulfilled by:", options: [ { text: "The new skills or knowledge you acquired.", value: "story-collector" }, { text: "The sense of peace and rejuvenation.", value: "soul-seeker" }, { text: "The stories of the challenges you overcame.", value: "thrill-chaser" }, { text: "Knowing you saw a place few others have seen.", value: "explorer" } ] }
         ];
-       
+        
         const personaQuizResults = {
             'explorer': { persona: "The Explorer", title: "Your DNA is set for discovery!", description: "You're driven by curiosity and a desire to get off the beaten path. You crave authenticity and aren't afraid of a little unpredictability. Now, let's find your next great adventure below!" },
             'story-collector': { persona: "The Story Collector", title: "You're a cultural connoisseur!", description: "You travel to learn, to taste, and to immerse yourself in the rich tapestry of human history and creativity. Your perfect trip is filled with stories. Let's find your next chapter below!" },
@@ -577,8 +718,7 @@
             const userAnswers = {};
 
             function render() {
-                // Add an intro screen
-                if (currentQuestionIndex === -1) {
+                if (currentQuestionIndex === -1) { // Intro screen
                     container.innerHTML = `
                         <button class="modal-close absolute top-4 right-4 text-gray-500 hover:text-black text-2xl">&times;</button>
                         <div class="text-center">
@@ -601,8 +741,8 @@
                 const questionData = personaQuizQuestions[currentQuestionIndex];
                 let optionsHTML = '';
                 questionData.options.forEach((option, i) => {
-                    const isSelected = userAnswers[currentQuestionIndex] === i;
-                    optionsHTML += `<div data-option-index="${i}" class="quiz-option cursor-pointer border-2 ${isSelected ? 'border-brand-primary bg-brand-primary-light text-brand-primary-dark' : 'border-gray-200'} rounded-2xl p-4 mt-4 font-medium hover:border-brand-primary">${option.text}</div>`;
+                    const isSelected = userAnswers[currentQuestionIndex] === option.value;
+                    optionsHTML += `<button data-value="${option.value}" class="quiz-option w-full text-left cursor-pointer border-2 ${isSelected ? 'border-brand-primary bg-brand-primary-light text-brand-primary-dark' : 'border-gray-200'} rounded-2xl p-4 mt-4 font-medium hover:border-brand-primary">${option.text}</button>`;
                 });
 
                 container.innerHTML = `
@@ -617,46 +757,52 @@
                     </div>
                     <div class="mt-10 flex justify-between items-center">
                         <button id="prev-btn" class="bg-gray-200 text-gray-700 px-6 py-2 rounded-full font-semibold hover:bg-gray-300 disabled:opacity-50">Previous</button>
-                        <button id="next-btn" class="bg-brand-accent text-white px-8 py-3 rounded-full font-bold hover:bg-brand-accent-hover shadow-md">${currentQuestionIndex === personaQuizQuestions.length - 1 ? 'Reveal My Persona!' : 'Next Question'}</button>
+                        <button id="next-btn" class="bg-brand-accent text-white px-8 py-3 rounded-full font-bold hover:bg-brand-accent-hover shadow-md" disabled>${currentQuestionIndex === personaQuizQuestions.length - 1 ? 'Reveal My Persona!' : 'Next Question'}</button>
                     </div>
                 `;
-               
+                
                 container.querySelector('#prev-btn').disabled = currentQuestionIndex === 0;
                 container.querySelector('#prev-btn').addEventListener('click', () => { if(currentQuestionIndex > 0) { currentQuestionIndex--; render(); }});
-                container.querySelector('#next-btn').addEventListener('click', handleNext);
+                
+                const nextBtn = container.querySelector('#next-btn');
+                if (userAnswers[currentQuestionIndex]) {
+                    nextBtn.disabled = false;
+                }
+                nextBtn.addEventListener('click', handleNext);
+
                 container.querySelectorAll('.quiz-option').forEach(opt => opt.addEventListener('click', e => {
-                    userAnswers[currentQuestionIndex] = parseInt(e.currentTarget.getAttribute('data-option-index'));
+                    const value = e.currentTarget.getAttribute('data-value');
+                    userAnswers[currentQuestionIndex] = value;
                     render(); // Re-render to show selection
-                    // Automatically move to next question
-                    setTimeout(handleNext, 300);
+                    
+                    // Auto-next
+                    setTimeout(() => {
+                        handleNext();
+                    }, 300); // 300ms delay
                 }));
             }
 
             function handleNext() {
-                if(userAnswers[currentQuestionIndex] === undefined) return;
+                if(userAnswers[currentQuestionIndex] === undefined) return; 
 
                 if (currentQuestionIndex < personaQuizQuestions.length - 1) {
                     currentQuestionIndex++;
                     render();
                 } else {
-                    const persona = calculatePersona();
-                    userState.persona = persona;
-                    const resultData = personaQuizResults[persona];
-                    renderResults(resultData);
+                    handleQuizComplete();
                 }
             }
 
             function calculatePersona() {
                 const vote = { 'explorer': 0, 'story-collector': 0, 'soul-seeker': 0, 'thrill-chaser': 0 };
                 for(let i = 0; i < personaQuizQuestions.length; i++) {
-                    const answerIndex = userAnswers[i];
-                    if(answerIndex !== undefined) {
-                        const personaValue = personaQuizQuestions[i].options[answerIndex].value;
-                        vote[personaValue]++;
+                    const answerValue = userAnswers[i];
+                    if(answerValue) {
+                        vote[answerValue]++;
                     }
                 }
                 let maxVotes = 0;
-                let finalPersona = 'explorer';
+                let finalPersona = 'explorer'; // Default
                 for (const persona in vote) {
                     if (vote[persona] > maxVotes) {
                         maxVotes = vote[persona];
@@ -666,7 +812,14 @@
                 return finalPersona;
             }
 
-            function renderResults(resultData) {
+            async function handleQuizComplete() {
+                const persona = calculatePersona();
+                userState.persona = persona;
+                
+                // Save to Firestore
+                await saveUserData({ persona: persona });
+
+                const resultData = personaQuizResults[persona];
                 container.innerHTML = `
                     <div class="text-center animate-fade-in-up">
                         <p class="font-semibold text-brand-primary">YOUR TRAVEL DNA</p>
@@ -678,18 +831,16 @@
                 `;
                 document.getElementById('show-inspiration-btn').addEventListener('click', () => {
                     closeModal(modal);
-                    updateInspirationSection();
+                    updateInspirationSection(persona);
                     document.getElementById('inspiration').scrollIntoView({ behavior: 'smooth' });
                 });
             }
-           
-            // Start at the intro screen
-            currentQuestionIndex = -1;
+
+            currentQuestionIndex = -1; // Start at intro screen
             render();
         }
 
-
-        // --- 5. TRIP PLANNER QUIZ & DESTINATION LOGIC ---
+        // --- Trip Planner Quiz & Destination Logic ---
         const tripPlannerQuestions = [
             { id: 'distance', question: 'How far are you looking to go?', options: [ {text: 'Stay Domestic', value: 'domestic'}, {text: 'Short-Haul (Nearby Countries)', value: 'short-haul'}, {text: 'Long-Haul (Across the Globe)', value: 'long-haul'}] },
             { id: 'duration', question: 'How long is your trip?', options: [ {text: 'A Weekend Getaway (2-4 days)', value: 'weekend'}, {text: 'About a Week (5-10 days)', value: 'week'}, {text: 'A Long Expedition (10+ days)', value: 'expedition'}] },
@@ -699,86 +850,109 @@
         function loadTripPlannerQuiz(modal) {
             const container = modal.querySelector('.modal-content');
             let currentQuestionIndex = 0;
-           
-            // Reset prefs for this new quiz, but keep the category
-            userState.tripPreferences = {
-                category: userState.tripPreferences.category,
-                budget: null,
-                distance: null,
-                duration: null
-            };
-           
+            
+            // Clear old prefs but keep category
+            userState.tripPreferences = { category: userState.tripPreferences.category };
+            
             function render() {
                 const questionData = tripPlannerQuestions[currentQuestionIndex];
                  let optionsHTML = '';
                 questionData.options.forEach((option, i) => {
                     const isSelected = userState.tripPreferences[questionData.id] === option.value;
-                    optionsHTML += `<div data-value="${option.value}" class="quiz-option cursor-pointer border-2 ${isSelected ? 'border-brand-primary bg-brand-primary-light text-brand-primary-dark' : 'border-gray-200'} rounded-2xl p-4 mt-4 font-medium hover:border-brand-primary">${option.text}</div>`;
+                    optionsHTML += `<button data-value="${option.value}" data-id="${questionData.id}" class="quiz-option w-full text-left cursor-pointer border-2 ${isSelected ? 'border-brand-primary bg-brand-primary-light text-brand-primary-dark' : 'border-gray-200'} rounded-2xl p-4 mt-4 font-medium hover:border-brand-primary">${option.text}</button>`;
                 });
-               
+                
                 container.innerHTML = `
                     <button class="modal-close absolute top-4 right-4 text-gray-500 hover:text-black text-2xl">&times;</button>
                     <div id="trip-planner-container">
                         <div class="mb-8 text-center">
                             <h2 class="font-heading text-3xl font-bold text-brand-dark">Plan Your Trip</h2>
                             <p class="text-gray-600">A few more details to find your perfect destination.</p>
-                            <p class="mt-2 text-sm font-semibold text-brand-primary">Category: ${userState.tripPreferences.category}</p>
+                             <p class="mt-2 text-sm font-semibold text-brand-primary">Category: ${userState.tripPreferences.category}</p>
                         </div>
                         <h3 class="font-heading text-xl font-bold text-brand-dark mt-6">${questionData.question}</h3>
                         <div>${optionsHTML}</div>
                     </div>
                     <div class="mt-10 flex justify-end">
-                        <button id="generate-trip-btn" class="bg-brand-accent text-white px-8 py-3 rounded-full font-bold hover:bg-brand-accent-hover shadow-md">${currentQuestionIndex === tripPlannerQuestions.length - 1 ? 'Find Destinations!' : 'Next'}</button>
+                        <button id="generate-trip-btn" class="bg-brand-accent text-white px-8 py-3 rounded-full font-bold hover:bg-brand-accent-hover shadow-md" disabled>${currentQuestionIndex === tripPlannerQuestions.length - 1 ? 'Find Destinations!' : 'Next'}</button>
                     </div>
                 `;
+                
+                const generateBtn = container.querySelector('#generate-trip-btn');
+                if (userState.tripPreferences[questionData.id]) {
+                     generateBtn.disabled = false;
+                }
 
                 container.querySelectorAll('.quiz-option').forEach(opt => opt.addEventListener('click', e => {
                     const value = e.currentTarget.getAttribute('data-value');
-                    userState.tripPreferences[questionData.id] = value;
-                    // Automatically move to next
-                    setTimeout(() => {
-                        if (currentQuestionIndex < tripPlannerQuestions.length - 1) {
-                            currentQuestionIndex++;
-                            render();
-                        } else {
-                            // On last question, just re-render to show selection
-                            render();
-                        }
-                    }, 300);
+                    const id = e.currentTarget.getAttribute('data-id');
+                    userState.tripPreferences[id] = value;
+                    
+                    // Auto-next
+                    if (currentQuestionIndex < tripPlannerQuestions.length - 1) {
+                        currentQuestionIndex++;
+                        render();
+                    } else {
+                        // On last question, just re-render to enable button
+                        render();
+                    }
                 }));
 
-                container.querySelector('#generate-trip-btn').addEventListener('click', () => {
+                generateBtn.addEventListener('click', () => {
                     if (currentQuestionIndex < tripPlannerQuestions.length - 1) {
                          currentQuestionIndex++;
                          render();
                     } else if (userState.tripPreferences.budget && userState.tripPreferences.distance && userState.tripPreferences.duration) {
-                        // *** THIS IS THE NEW GEMINI CALL ***
-                        handleGenerateDestinations(userState.persona, userState.tripPreferences, modal);
+                        handleGenerateDestinations();
                     }
                 });
             }
             render();
         }
+        
+        async function handleGenerateDestinations() {
+            // Show a loading state inside the current modal
+            const container = currentModal.querySelector('.modal-content');
+            container.innerHTML = `
+                <div class="text-center animate-fade-in-up">
+                    <p class="font-semibold text-brand-primary">YOUR CURATED DESTINATIONS</p>
+                    <h2 class="font-heading text-4xl font-bold text-brand-dark mt-2">Here Are Your Matches</h2>
+                    <div class="my-12 flex flex-col items-center justify-center">
+                        <div class="w-12 h-12 rounded-full animate-spin border-4 border-dashed border-brand-primary border-t-transparent"></div>
+                        <p class="text-lg text-gray-700 mt-4">Our AI is scanning the globe for you...</p>
+                    </div>
+                    <button class="modal-close mt-8 bg-brand-accent text-white px-8 py-3 rounded-full font-bold" disabled>Loading...</button>
+                </div>
+            `;
 
-        function renderTripResults(destinations, modal, error = null, isLoading = false) {
-            userState.lastGeneratedDestinations = destinations || []; // Store results
-            const container = modal.querySelector('.modal-content');
+            const { persona, tripPreferences } = userState;
+            const prompt = `Act as a world-class travel expert. A user with the travel persona of a '${persona}' is planning a '${tripPreferences.duration}' trip. Their travel distance is '${tripPreferences.distance}', their budget is '${tripPreferences.budget}', and their main interest is '${tripPreferences.category}'.
+Generate 3 unique, specific destinations (e.g., "Kyoto, Japan", "Patagonia, Chile", "Sedona, Arizona") that are a *perfect* match for this user.
+For each destination, provide a "name", a 1-2 sentence "description", and a 2-3 word "imageQuery" for a stock photo (e.g., "Patagonia mountains", "Kyoto temple").
+Respond *only* with the valid JSON array.`;
+
+            const systemInstruction = "You are a travel API that returns only JSON.";
+            
+            const destinationsText = await callGemini(prompt, systemInstruction, true);
+            let destinations = [];
+            try {
+                destinations = JSON.parse(destinationsText);
+            } catch (e) {
+                console.error("Failed to parse destinations JSON:", e);
+                destinations = [];
+            }
+
+            userState.lastGeneratedDestinations = destinations;
+            await saveUserData({ lastGeneratedDestinations: destinations });
+
+            renderTripResults(destinations, container);
+        }
+
+        function renderTripResults(destinations, container) {
             let resultsHTML = '';
 
-            if (isLoading) {
-                resultsHTML = `
-                    <div class="my-12 flex flex-col items-center justify-center">
-                        <div class="spinner" style="width: 48px; height: 48px; border-width: 5px;"></div>
-                        <p class="text-lg text-gray-700 mt-6">Our AI is scanning the globe for you...</p>
-                        <p class="text-gray-500">This may take a moment.</p>
-                    </div>
-                `;
-            } else if (error) {
-                resultsHTML = `<p class="text-center text-red-600 mt-8 font-semibold">${error}</p>`;
-            } else if (destinations && destinations.length > 0) {
+            if (destinations && destinations.length > 0) {
                  destinations.forEach((dest, index) => {
-                    // Use a placeholder image based on the imageQuery
-                    const placeholderImg = `https://placehold.co/600x400/14B8A6/white?text=${encodeURIComponent(dest.imageQuery || dest.name)}`;
                     resultsHTML += `
                         <div class="border bg-gray-50 rounded-2xl p-6 mt-6">
                              <div class="flex justify-between items-center">
@@ -786,24 +960,23 @@
                                 <button data-details-target="${index}" class="view-details-btn text-brand-primary font-bold">View Details</button>
                              </div>
                              <div id="details-${index}" class="trip-details mt-4">
-                                <img src="${placeholderImg}" class="rounded-xl aspect-video object-cover w-full" alt="${dest.name}">
+                                <img src="https://placehold.co/600x400/14B8A6/white?text=${encodeURIComponent(dest.imageQuery)}" class="rounded-xl aspect-video object-cover w-full" alt="${dest.name}">
                                 <div id="itinerary-container-${index}" class="mt-4">
                                     <p class="text-gray-600 mt-4">${dest.description}</p>
-                                    <button data-dest-index="${index}" class="generate-itinerary-btn mt-4 w-full bg-brand-primary text-white font-bold py-3 px-4 rounded-full flex items-center justify-center gap-2 hover:bg-brand-primary-dark transition-colors">
+                                    <button data-dest-index="${index}" class="generate-itinerary-btn mt-4 w-full bg-brand-primary text-white font-bold py-3 px-4 rounded-full flex items-center justify-center gap-2">
                                         ✨ Generate Detailed Itinerary
                                     </button>
                                 </div>
-                                <!-- *** MODIFIED BUTTONS FOR BOOKING *** -->
                                 <div class="mt-6 flex flex-col sm:flex-row gap-4">
-                                    <a href="https://www.makemytrip.com/flights/" target="_blank" rel="noopener noreferrer" class="proxy-book-flight-btn w-full btn-like bg-gray-800 text-white hover:bg-gray-700">Book Flights</a>
-                                    <a href="https://www.airbnb.com/" target="_blank" rel="noopener noreferrer" class="proxy-book-hotel-btn w-full btn-like bg-gray-200 text-gray-700 hover:bg-gray-300">Book Hotels</a>
+                                    <a href="https://www.makemytrip.com/" target="_blank" class="w-full text-center bg-gray-800 text-white font-bold py-2 px-4 rounded-full">Book Flights</a>
+                                    <a href="https://www.airbnb.com/" target="_blank" class="w-full text-center bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-full">Book Hotels</a>
                                 </div>
                              </div>
                         </div>
                     `;
                  });
             } else {
-                resultsHTML = `<p class="text-center text-gray-600 mt-8">No exact matches found for your specific criteria, but our AI is always learning! Try different options to see more possibilities.</p>`;
+                resultsHTML = `<p class="text-center text-red-500 mt-8">Sorry, our AI couldn't find destinations for that combo. Please try again!</p>`;
             }
 
             container.innerHTML = `
@@ -815,8 +988,7 @@
                     <button class="modal-close mt-8 bg-brand-accent text-white px-8 py-3 rounded-full font-bold hover:bg-brand-accent-hover">Start Over</button>
                 </div>
             `;
-           
-            // Re-add event listeners for new content
+            
             container.querySelectorAll('.view-details-btn').forEach(btn => {
                 btn.addEventListener('click', e => {
                     const targetId = e.currentTarget.getAttribute('data-details-target');
@@ -839,150 +1011,38 @@
                 });
             });
         }
-       
-        // --- 6. MOCK DESTINATION DATABASE (REMOVED) ---
-        // const destinationDB = [...]; // This is now gone!
-
-        // --- 7. GEMINI API INTEGRATION ---
-       
-        // --- Gemini API Helper Function ---
-        // This function calls the Gemini API using fetch and includes exponential backoff for retries.
-        async function callGemini(prompt, systemInstruction, isJson = false, jsonSchema = null) {
-            const apiKey = ""; // API key will be handled by the environment
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-
-            let retries = 3;
-            let delay = 1000;
-
-            const payload = {
-                contents: [{ parts: [{ text: prompt }] }],
-                systemInstruction: {
-                    parts: [{ text: systemInstruction }],
-                },
-            };
-
-            if (isJson) {
-                payload.generationConfig = {
-                    responseMimeType: "application/json",
-                    responseSchema: jsonSchema,
-                };
-            }
-
-            while (retries > 0) {
-                try {
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (!response.ok) {
-                        // Log more detailed error
-                        const errorBody = await response.text();
-                        console.error("API Error Response:", response.status, errorBody);
-                        throw new Error(`API Error: ${response.status}. ${errorBody}`);
-                    }
-
-                    const result = await response.json();
-                    const candidate = result.candidates?.[0];
-
-                    if (candidate && candidate.content?.parts?.[0]?.text) {
-                        const text = candidate.content.parts[0].text;
-                        if (isJson) {
-                            try {
-                                return JSON.parse(text); // Parse the JSON text
-                            } catch (e) {
-                                console.error("Failed to parse JSON response:", text);
-                                throw new Error("API returned invalid JSON.");
-                            }
-                        } else {
-                            return marked.parse(text); // Parse markdown to HTML
-                        }
-                    } else if (result.promptFeedback) {
-                         console.error("API Error: Prompt was blocked.", result.promptFeedback);
-                         throw new Error("Request was blocked by API safety settings.");
-                    } else {
-                        throw new Error("Invalid API response structure.");
-                    }
-                } catch (error) {
-                    console.warn(`Gemini API call failed. Retrying in ${delay}ms...`, error);
-                    retries--;
-                    if (retries === 0) {
-                        console.error("Gemini API call failed after all retries.", error);
-                        return isJson ? { error: "Failed to generate content." } : "<p class='text-red-500'>Error: Unable to generate a response after multiple attempts.</p>";
-                    }
-                    await new Promise(res => setTimeout(res, delay));
-                    delay *= 2; // Exponential backoff
-                }
-            }
-        }
-
-        // --- NEW: Function to get destinations from Gemini ---
-        async function handleGenerateDestinations(persona, prefs, modal) {
-            // 1. Show loading state immediately
-            renderTripResults(null, modal, null, true); // (dest, modal, error, isLoading)
-
-            // 2. Define the JSON schema Gemini MUST follow
-            const schema = {
-                type: "ARRAY",
-                items: {
-                    type: "OBJECT",
-                    properties: {
-                    name: { type: "STRING" },
-                    description: { type: "STRING" },
-                    imageQuery: { type: "STRING" },
-                    },
-                    required: ["name", "description", "imageQuery"]
-                }
-            };
-           
-            // 3. Create the prompt
-            const prompt = `Act as a world-class travel expert. A user with the travel persona of a '${persona}' is planning a '${prefs.duration}' trip. Their travel distance is '${prefs.distance}', their budget is '${prefs.budget}', and their main interest is '${prefs.category}'.
-Generate 3 unique, specific destinations (e.g., "Kyoto, Japan", "Patagonia, Chile", "Sedona, Arizona") that are a *perfect* match for this user.
-For each destination, provide a "name", a 1-2 sentence "description", and a 2-3 word "imageQuery" for a stock photo (e.g., "Patagonia mountains", "Kyoto temple").
-Respond *only* with the valid JSON array.`;
-           
-            const systemInstruction = "You are a travel API that returns only JSON.";
-
-            // 4. Call the API
-            const result = await callGemini(prompt, systemInstruction, true, schema);
-
-            // 5. Render results or error
-            if (result && !result.error && Array.isArray(result)) {
-                renderTripResults(result, modal);
-            } else {
-                console.error("Failed to get destinations:", result);
-                renderTripResults(null, modal, "Sorry, our AI couldn't find destinations for that combo. Please try again!");
-            }
-        }
-       
+        
         async function handleGenerateItinerary(destination, destIndex) {
             const container = document.getElementById(`itinerary-container-${destIndex}`);
-            if (!container) return;
-
             const button = container.querySelector('.generate-itinerary-btn');
             button.innerHTML = `<div class="spinner"></div><span>Generating...</span>`;
             button.disabled = true;
 
             const { persona, tripPreferences } = userState;
             const prompt = `
-                You are an expert travel planner. A user with the travel persona of a '${persona}'
-                is planning a trip to '${destination.name}'. Their budget is '${tripPreferences.budget}'
-                and their trip duration is '${tripPreferences.duration}'.
-               
-                Generate a detailed, day-by-day itinerary for them. Make it engaging, exciting,
-                and specific to their persona. Use markdown for formatting with headings for each day.
+                You are an expert travel planner. A user with the travel persona of a '${persona}' 
+                is planning a '${tripPreferences.duration}' trip to '${destination.name}' on a 
+                '${tripPreferences.budget}' budget. Their main interest is '${tripPreferences.category}'.
+                
+                Generate a detailed, day-by-day itinerary for them. Make it engaging, exciting, 
+                and specific to their persona. Use markdown for formatting with headings for each day (e.g., "### Day 1: Arrival").
             `;
-           
-            const itineraryHTML = await callGemini(prompt, "You are a helpful and creative travel assistant.");
-           
+            
+            const itineraryHTML = await callGemini(prompt);
+            userState.lastGeneratedItinerary = itineraryHTML;
+            await saveUserData({ lastGeneratedItinerary: itineraryHTML });
+            
+            // Show "My Itinerary" button
+            document.getElementById('my-itinerary-btn').classList.remove('hidden');
+            document.getElementById('my-itinerary-btn-mobile').classList.remove('hidden');
+
             container.innerHTML = `
-                <div class="gemini-content">${itineraryHTML}</div>
-                <button data-dest-name="${destination.name}" class="find-gems-btn mt-4 w-full bg-brand-accent text-white font-bold py-3 px-4 rounded-full flex items-center justify-center gap-2 hover:bg-brand-accent-hover transition-colors">
+                <div class="gemini-content">${marked.parse(itineraryHTML)}</div>
+                <button data-dest-name="${destination.name}" class="find-gems-btn mt-4 w-full bg-brand-accent text-white font-bold py-3 px-4 rounded-full flex items-center justify-center gap-2">
                     ✨ Suggest Hidden Gems
                 </button>
             `;
-           
+            
             container.querySelector('.find-gems-btn').addEventListener('click', e => {
                 const destName = e.currentTarget.getAttribute('data-dest-name');
                 handleFindHiddenGems(destName, container);
@@ -999,20 +1059,23 @@ Respond *only* with the valid JSON array.`;
             const button = container.querySelector('.find-gems-btn');
             button.innerHTML = `<div class="spinner"></div><span>Finding Gems...</span>`;
             button.disabled = true;
-           
+            
             const { persona } = userState;
             const prompt = `
-                You are a local expert for '${destinationName}'. A tourist with the travel persona
-                of a '${persona}' is visiting. Suggest 3 unique, non-touristy 'hidden gems'
-                (like a specific cafe, a small museum, a beautiful walking path, or a local market)
+                You are a local expert for '${destinationName}'. A tourist with the travel persona 
+                of a '${persona}' is visiting. Suggest 3 unique, non-touristy 'hidden gems' 
+                (like a specific cafe, a small museum, a beautiful walking path, or a local market) 
                 that they would love. For each suggestion, briefly explain why it fits their persona.
                 Use markdown for formatting.
             `;
-           
+            
             const gemsHTML = await callGemini(prompt, `You are a local guide with deep knowledge of hidden gems.`);
+            userState.lastGeneratedGems = gemsHTML;
+            await saveUserData({ lastGeneratedGems: gemsHTML });
+            
             const gemsContainer = document.createElement('div');
             gemsContainer.className = "gemini-content mt-4 border-t pt-4";
-            gemsContainer.innerHTML = gemsHTML;
+            gemsContainer.innerHTML = marked.parse(gemsHTML);
             container.appendChild(gemsContainer);
             button.style.display = 'none'; // Hide button after use
 
@@ -1022,235 +1085,356 @@ Respond *only* with the valid JSON array.`;
                 detailsDiv.style.maxHeight = detailsDiv.scrollHeight + "px";
             }
         }
-       
+        
         function setupAIBuddy() {
             const form = document.getElementById('ai-buddy-form');
-            if (!form) return;
-           
             const input = document.getElementById('ai-buddy-input');
             const chatWindow = document.getElementById('ai-buddy-chat-window');
-           
+            
+            // Clear default message
+            chatWindow.innerHTML = '';
+            let aiWelcomeMessage = "Hello! I'm your AI Travel Buddy. What can I help you with today?";
+            
+            if (userState.lastGeneratedItinerary) {
+                const destName = userState.lastGeneratedDestinations[0]?.name || 'your trip';
+                aiWelcomeMessage = `Hello! I see you've generated an itinerary for ${destName}. Ask me anything about it, like packing tips for Day 2 or local customs!`;
+            }
+
+            const welcomeBubble = document.createElement('div');
+            welcomeBubble.className = "p-4 rounded-t-xl rounded-br-xl bg-brand-primary-light text-brand-primary-dark self-start max-w-lg break-words";
+            welcomeBubble.innerHTML = marked.parse(aiWelcomeMessage);
+            chatWindow.appendChild(welcomeBubble);
+
+            // This is a one-time setup, so we use a flag to prevent multiple listeners
             if (form.dataset.initialized) return;
-            form.dataset.initialized = "true";
+            form.dataset.initialized = true;
 
             form.addEventListener('submit', async e => {
                 e.preventDefault();
                 const userMessage = input.value.trim();
                 if (!userMessage) return;
 
+                // Add user message to window
                 const userBubble = document.createElement('div');
-                userBubble.className = "p-3 rounded-lg bg-brand-accent text-white self-end max-w-md";
+                userBubble.className = "p-4 rounded-t-xl rounded-bl-xl bg-brand-accent text-white self-end max-w-lg break-words";
                 userBubble.textContent = userMessage;
                 chatWindow.appendChild(userBubble);
                 input.value = '';
                 chatWindow.scrollTop = chatWindow.scrollHeight;
 
+                // Add loading indicator
                 const loadingBubble = document.createElement('div');
-                loadingBubble.className = "p-3 rounded-lg bg-brand-primary-light text-brand-primary-dark self-start max-w-md flex items-center";
+                loadingBubble.className = "p-4 rounded-t-xl rounded-br-xl bg-brand-primary-light text-brand-primary-dark self-start max-w-lg flex items-center break-words";
                 loadingBubble.innerHTML = `<div class="spinner mr-2"></div> Thinking...`;
                 chatWindow.appendChild(loadingBubble);
                 chatWindow.scrollTop = chatWindow.scrollHeight;
-
-                const destinationContext = userState.lastGeneratedDestinations.length > 0
-                    ? `The user is interested in these destinations: ${userState.lastGeneratedDestinations.map(d => d.name).join(', ')}.`
-                    : "The user has not selected a destination yet, so try to answer generally.";
-               
-                const systemPrompt = `You are the 'AI Travel Buddy'. Be friendly, helpful, and concise. ${destinationContext}`;
+                
+                let systemContext = `You are the 'AI Travel Buddy'. Be friendly, helpful, and concise.`;
+                if (userState.lastGeneratedItinerary) {
+                    systemContext += ` The user has the following itinerary planned, use it to answer their questions: \n\n ${userState.lastGeneratedItinerary}`;
+                }
+                if (userState.lastGeneratedGems) {
+                    systemContext += ` \n\n They are also aware of these hidden gems: \n\n ${userState.lastGeneratedGems}`;
+                }
+                
+                const systemPrompt = systemContext;
                 const responseHTML = await callGemini(userMessage, systemPrompt);
 
-                loadingBubble.innerHTML = responseHTML;
+                // Replace loading bubble with AI response
+                loadingBubble.classList.remove('flex', 'items-center');
+                loadingBubble.innerHTML = marked.parse(responseHTML);
                 chatWindow.scrollTop = chatWindow.scrollHeight;
             });
         }
 
-        // --- 8. PROXY BOOKING (REMOVED) ---
+        // --- "My Itinerary" Modal Logic ---
+        function loadMyItinerary() {
+            const contentDiv = document.getElementById('my-itinerary-content');
+            if (userState.lastGeneratedItinerary) {
+                contentDiv.innerHTML = marked.parse(userState.lastGeneratedItinerary);
+            } else {
+                contentDiv.innerHTML = `<p class="text-gray-600 text-center">You don't have a saved itinerary yet. Go to the "Inspiration" section to generate one!</p>`;
+            }
+        }
 
-        // --- INITIALIZATION ---
-        document.querySelectorAll('.modal-close').forEach(btn => {
-            btn.addEventListener('click', () => {
-                closeModal(btn.closest('.modal'));
-            });
+        async function clearItinerary() {
+            userState.lastGeneratedItinerary = null;
+            userState.lastGeneratedGems = null;
+            userState.lastGeneratedDestinations = [];
+            
+            // Clear from Firestore
+            if (db && currentUserId) {
+                 const docRef = doc(db, "artifacts", appId, "users", currentUserId, "travelPlanner", "data");
+                 // We update to remove fields, not delete the doc
+                 await updateDoc(docRef, {
+                    lastGeneratedItinerary: null,
+                    lastGeneratedGems: null,
+                    lastGeneratedDestinations: []
+                 });
+            }
+
+            // Hide button and close modal
+            document.getElementById('my-itinerary-btn').classList.add('hidden');
+            document.getElementById('my-itinerary-btn-mobile').classList.add('hidden');
+            closeModal(document.getElementById('my-itinerary-modal'));
+        }
+        document.getElementById('itinerary-clear-btn').addEventListener('click', clearItinerary);
+        document.getElementById('itinerary-open-buddy-btn').addEventListener('click', () => {
+             // Close this modal and open the buddy modal
+             closeModal(document.getElementById('my-itinerary-modal'));
+             openModal(document.getElementById('journey-modal'));
         });
-       
-        // --- *** NEW: FIREBASE AUTH SCRIPT *** ---
-       
-        // This script will run as a module, allowing top-level await
-        (async () => {
-           
-            // --- *** ACTION REQUIRED *** ---
-            // PASTE YOUR FIREBASE CONFIG OBJECT HERE
-            // Get it from Project Settings > Your Apps > Web App > Config
-            // It looks like: { apiKey: "...", authDomain: "...", ... }
-            const YOUR_FIREBASE_CONFIG_JSON = {
-              apiKey: "AIzaSyBlb9Ye7elbpj19Y7TrHOq5eNS_02rK-44",
-              authDomain: "before-you-go-10236.firebaseapp.com",
-              projectId: "before-you-go-10236",
-              storageBucket: "before-you-go-10236.firebasestorage.app",
-              messagingSenderId: "746797011005",
-              appId: "1:746797011005:web:5cd09abe929b708d0eda54",
-              measurementId: "G-PKLHME3VJD"
-            };
-            // --- *** END OF ACTION *** ---
+
+        // --- 5. FIREBASE AUTH & DATA ---
+
+        function updateAuthUI(user) {
+            const loadingSpinner = document.getElementById('auth-loading');
+            const signInBtn = document.getElementById('auth-signin-btn');
+            const userInfo = document.getElementById('auth-user-info');
+            const userIdSpan = document.getElementById('auth-user-id');
+            const signOutBtn = document.getElementById('auth-signout-btn');
+            
+            const signInBtnMobile = document.getElementById('auth-signin-btn-mobile');
+            const userInfoMobile = document.getElementById('auth-user-info-mobile');
+            const userIdSpanMobile = document.getElementById('auth-user-id-mobile');
+            
+            const itineraryBtn = document.getElementById('my-itinerary-btn');
+            const itineraryBtnMobile = document.getElementById('my-itinerary-btn-mobile');
+
+            loadingSpinner.classList.add('hidden');
+
+            if (user && !user.isAnonymous) {
+                // User is signed in
+                const truncatedId = user.email ? user.email.split('@')[0] : `User: ${user.uid.substring(0, 6)}...`;
+                userIdSpan.textContent = `Hi, ${truncatedId}`;
+                userIdSpanMobile.textContent = `Hi, ${truncatedId}`;
+                
+                signInBtn.classList.add('hidden');
+                signInBtnMobile.classList.add('hidden');
+                userInfo.classList.remove('hidden');
+                userInfoMobile.classList.remove('hidden');
+
+                // Check for saved itinerary
+                if (userState.lastGeneratedItinerary) {
+                    itineraryBtn.classList.remove('hidden');
+                    itineraryBtnMobile.classList.remove('hidden');
+                }
+
+            } else {
+                // User is anonymous or signed out
+                signInBtn.classList.remove('hidden');
+                signInBtnMobile.classList.remove('hidden');
+                userInfo.classList.add('hidden');
+                userInfoMobile.classList.add('hidden');
+                
+                // Hide itinerary button if signed out
+                itineraryBtn.classList.add('hidden');
+                itineraryBtnMobile.classList.add('hidden');
+            }
+        }
+
+        async function loadUserData(userId) {
+            if (!db || !userId) return;
+            try {
+                const docRef = doc(db, "artifacts", appId, "users", userId, "travelPlanner", "data");
+                const docSnap = await getDoc(docRef);
+
+                const itineraryBtn = document.getElementById('my-itinerary-btn');
+                const itineraryBtnMobile = document.getElementById('my-itinerary-btn-mobile');
+
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    // Load data into state
+                    if (data.persona) {
+                        userState.persona = data.persona;
+                        updateInspirationSection(data.persona);
+                    }
+                    if (data.lastGeneratedDestinations) {
+                        userState.lastGeneratedDestinations = data.lastGeneratedDestinations;
+                    }
+                    if (data.lastGeneratedItinerary) {
+                        userState.lastGeneratedItinerary = data.lastGeneratedItinerary;
+                        itineraryBtn.classList.remove('hidden'); // Show button
+                        itineraryBtnMobile.classList.remove('hidden');
+                    } else {
+                         itineraryBtn.classList.add('hidden'); // Hide button
+                         itineraryBtnMobile.classList.add('hidden');
+                    }
+                    if (data.lastGeneratedGems) {
+                        userState.lastGeneratedGems = data.lastGeneratedGems;
+                    }
+                    console.log("User data loaded from Firestore.");
+                } else {
+                    console.log("No previous user data found.");
+                    // No data, so clear any inspiration filters
+                    updateInspirationSection(null);
+                    itineraryBtn.classList.add('hidden');
+                    itineraryBtnMobile.classList.add('hidden');
+                }
+            } catch (e) {
+                console.error("Error loading user data:", e);
+            }
+        }
+
+        async function saveUserData(dataToSave) {
+            if (!db || !currentUserId || (auth.currentUser && auth.currentUser.isAnonymous)) {
+                // Don't save data for anonymous users
+                return;
+            }
+            try {
+                const docRef = doc(db, "artifacts", appId, "users", currentUserId, "travelPlanner", "data");
+                // Use setDoc with merge: true to update/create
+                await setDoc(docRef, dataToSave, { merge: true });
+                console.log("User data saved:", dataToSave);
+            } catch (e) {
+                console.error("Error saving user data:", e);
+            }
+        }
+        
+        async function initializeFirebase() {
+            // Get config from either environment (Canvas) or local const
+            const firebaseConfig = (typeof __firebase_config !== 'undefined') 
+                ? JSON.parse(__firebase_config) 
+                : YOUR_FIREBASE_CONFIG_JSON;
+
+            // Get initial token from environment (Canvas)
+            const initialAuthToken = (typeof __initial_auth_token !== 'undefined')
+                ? __initial_auth_token
+                : null;
+
+            if (!firebaseConfig.apiKey) {
+                console.error("Firebase config is missing!");
+                document.getElementById('auth-loading').classList.add('hidden');
+                document.getElementById('auth-status').innerHTML = `<span class="text-sm text-red-500">Auth Error</span>`;
+                return;
+            }
 
             try {
-                // 1. Get mandatory environment variables
-                // These are provided by the canvas environment
-                let firebaseConfig = null;
-               
-                if (typeof __firebase_config !== 'undefined' && __firebase_config !== 'null') {
-                    // Use config from the environment first
-                    firebaseConfig = JSON.parse(__firebase_config);
-                } else if (YOUR_FIREBASE_CONFIG_JSON) {
-                    // Fallback to the config you pasted above
-                    firebaseConfig = YOUR_FIREBASE_CONFIG_JSON;
-                } else {
-                    // No config found
-                    throw new Error("Firebase config is not available. Please paste it into the YOUR_FIREBASE_CONFIG_JSON variable.");
-                }
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
 
-                const initialAuthToken = typeof __initial_auth_token !== 'undefined'
-                    ? __initial_auth_token
-                    : null;
-               
-                // 2. Initialize Firebase
-                // Use compat libraries to match the v10 SDKs loaded in <head>
-                firebase.initializeApp(firebaseConfig);
-                const auth = firebase.auth();
-                const db = firebase.firestore();
-               
-                // Make db globally accessible if other scripts need it
-                window.db = db;
+                // --- Auth Form Listeners ---
+                const authForm = document.getElementById('auth-form');
+                const emailInput = document.getElementById('auth-email');
+                const passwordInput = document.getElementById('auth-password');
+                const loginBtn = document.getElementById('auth-login-btn');
+                const signupBtn = document.getElementById('auth-signup-btn');
+                const errorMsg = document.getElementById('auth-error-message');
+                const signOutBtn = document.getElementById('auth-signout-btn');
+                const signOutBtnMobile = document.getElementById('auth-signout-btn-mobile');
 
-                // 3. Setup Auth UI references
-                const authStatus = document.getElementById('auth-status');
-                const authStatusMobile = document.getElementById('auth-status-mobile');
-                const authModal = document.getElementById('auth-modal');
-                const authError = document.getElementById('auth-error');
-               
-                const loginForm = document.getElementById('login-form');
-                const signupForm = document.getElementById('signup-form');
-                const loginTabBtn = document.getElementById('login-tab-btn');
-                const signupTabBtn = document.getElementById('signup-tab-btn');
+                loginBtn.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    errorMsg.classList.add('hidden');
+                    try {
+                        await signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
+                        closeModal(document.getElementById('auth-modal'));
+                        authForm.reset();
+                    } catch (error) {
+                        errorMsg.textContent = error.message;
+                        errorMsg.classList.remove('hidden');
+                    }
+                });
 
-                // Function to update UI based on auth state
-                const updateAuthUI = (user) => {
+                signupBtn.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    errorMsg.classList.add('hidden');
+                    try {
+                        await createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
+                        closeModal(document.getElementById('auth-modal'));
+                        authForm.reset();
+                    } catch (error) {
+                        errorMsg.textContent = error.message;
+                        errorMsg.classList.remove('hidden');
+                    }
+                });
+
+                const handleSignOut = async () => {
+                    // Clear local state before signing out
+                    userState.persona = null;
+                    userState.lastGeneratedDestinations = [];
+                    userState.lastGeneratedItinerary = null;
+                    userState.lastGeneratedGems = null;
+                    
+                    await signOut(auth);
+                    
+                    // After sign out, the onAuthStateChanged listener will fire
+                    // and we will sign in anonymously.
+                };
+
+                signOutBtn.addEventListener('click', handleSignOut);
+                signOutBtnMobile.addEventListener('click', handleSignOut);
+
+
+                // --- Persistent Auth State Listener ---
+                onAuthStateChanged(auth, async (user) => {
                     if (user) {
                         // User is signed in
-                        const userHTML = `
-                            <span class="text-gray-700">Hi, ${user.isAnonymous ? 'Guest' : (user.email ? user.email.split('@')[0] : user.uid.substring(0,6))}</span>
-                            <button id="sign-out-btn" class="text-sm text-gray-600 hover:text-brand-primary">Sign Out</button>
-                        `;
-                        authStatus.innerHTML = userHTML;
-                        authStatusMobile.innerHTML = userHTML;
-                       
-                        // Add sign-out listeners
-                        document.getElementById('sign-out-btn').addEventListener('click', () => auth.signOut());
-                        authStatusMobile.querySelector('#sign-out-btn').addEventListener('click', () => auth.signOut());
+                        currentUserId = user.uid;
+                        
+                        if (!user.isAnonymous) {
+                            // If it's a *real* user, load their data
+                            await loadUserData(user.uid);
+                        } else {
+                            // It's an anonymous user, reset/clear inspiration
+                            userState.persona = null;
+                            userState.lastGeneratedItinerary = null;
+                            updateInspirationSection(null);
+                            document.getElementById('my-itinerary-btn').classList.add('hidden');
+                            document.getElementById('my-itinerary-btn-mobile').classList.add('hidden');
+                        }
+                        updateAuthUI(user);
 
                     } else {
-                        // User is signed out
-                        const userHTML = `
-                            <button data-modal-trigger="auth-modal" class="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-full font-semibold hover:bg-gray-200 transition-all duration-300">
-                                Sign In
-                            </button>
-                        `;
-                        authStatus.innerHTML = userHTML;
-                        authStatusMobile.innerHTML = userHTML;
-                       
-                        // Re-add modal trigger for new buttons
-                        authStatus.querySelector('[data-modal-trigger="auth-modal"]').addEventListener('click', () => openModal(authModal));
-                        authStatusMobile.querySelector('[data-modal-trigger="auth-modal"]').addEventListener('click', () => openModal(authModal));
+                        // User is signed out, sign in anonymously
+                        currentUserId = null;
+                        updateAuthUI(null);
+                        updateInspirationSection(null);
+                        try {
+                            await signInAnonymously(auth);
+                        } catch (e) {
+                            console.error("Anonymous sign-in failed after sign-out:", e);
+                        }
                     }
-                };
-               
-                // Function to show auth errors
-                const showAuthError = (message) => {
-                    authError.textContent = message;
-                    authError.classList.remove('hidden');
-                };
+                });
 
-                // 4. Setup Auth Modal Listeners
-                function setupAuthModal() {
-                    authError.classList.add('hidden'); // Clear errors
-                   
-                    loginTabBtn.addEventListener('click', () => {
-                        loginTabBtn.classList.add('active');
-                        signupTabBtn.classList.remove('active');
-                        loginForm.classList.remove('hidden');
-                        signupForm.classList.add('hidden');
-                        authError.classList.add('hidden');
-                    });
-                   
-                    signupTabBtn.addEventListener('click', () => {
-                        signupTabBtn.classList.add('active');
-                        loginTabBtn.classList.remove('active');
-                        signupForm.classList.remove('hidden');
-                        loginForm.classList.add('hidden');
-                        authError.classList.add('hidden');
-                    });
-
-                    loginForm.addEventListener('submit', async (e) => {
-                        e.preventDefault();
-                        const email = document.getElementById('login-email').value;
-                        const password = document.getElementById('login-password').value;
+                // --- Initial Sign In ---
+                const currentUser = auth.currentUser;
+                if (!currentUser) {
+                    if (initialAuthToken) {
                         try {
-                            await auth.signInWithEmailAndPassword(email, password);
-                            closeModal(authModal);
-                        } catch (error) {
-                            showAuthError(error.message);
+                            await signInWithCustomToken(auth, initialAuthToken);
+                        } catch (e) {
+                            console.error("Custom token sign-in failed, falling back to anonymous", e);
+                            await signInAnonymously(auth);
                         }
-                    });
-                   
-                    signupForm.addEventListener('submit', async (e) => {
-                        e.preventDefault();
-                        const email = document.getElementById('signup-email').value;
-                        const password = document.getElementById('signup-password').value;
-                        const confirm = document.getElementById('signup-password-confirm').value;
-                       
-                        if (password !== confirm) {
-                            showAuthError("Passwords do not match.");
-                            return;
-                        }
-                       
-                        try {
-                            await auth.createUserWithEmailAndPassword(email, password);
-                            closeModal(authModal);
-                        } catch (error) {
-                            showAuthError(error.message);
-                        }
-                    });
-                }
-               
-                // 5. Auth State Change Listener
-                auth.onAuthStateChanged(updateAuthUI);
-
-                // 6. Initial Sign-In Logic
-                // Use token if provided, otherwise sign in anonymously
-                if (auth.currentUser) {
-                    updateAuthUI(auth.currentUser);
-                } else if (initialAuthToken) {
-                    try {
-                        await auth.signInWithCustomToken(initialAuthToken);
-                        // onAuthStateChanged will handle the UI update
-                    } catch (error) {
-                        console.error("Error signing in with custom token:", error);
-                        await auth.signInAnonymously(); // Fallback
+                    } else {
+                        // No token, sign in anonymously (for local dev)
+                        await signInAnonymously(auth);
                     }
                 } else {
-                    await auth.signInAnonymously();
-                    // onAuthStateChanged will handle the UI update
+                    // User already exists, trigger auth update
+                    updateAuthUI(currentUser);
+                    if (!currentUser.isAnonymous) {
+                        await loadUserData(currentUser.uid);
+                    }
                 }
+                // The onAuthStateChanged listener will handle the rest.
 
-            } catch (error) {
-                console.error("Firebase Initialization Error:", error);
-                const authStatus = document.getElementById('auth-status');
-                const authStatusMobile = document.getElementById('auth-status-mobile');
-                const errorHTML = `<span class="text-red-500 text-sm">Auth Error</span>`;
-                authStatus.innerHTML = errorHTML;
-                authStatusMobile.innerHTML = errorHTML;
+            } catch (e) {
+                console.error("Firebase initialization failed:", e);
+                document.getElementById('auth-loading').classList.add('hidden');
+                document.getElementById('auth-status').innerHTML = `<span class="text-sm text-red-500">Auth Error</span>`;
             }
-        })();
-       
+        }
+        
+        // --- 6. START THE APP ---
+        // Load default inspiration section on page load
+        updateInspirationSection(null);
+        // Initialize Firebase
+        initializeFirebase();
+
     </script>
 </body>
 </html>
