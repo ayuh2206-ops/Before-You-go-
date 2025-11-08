@@ -1293,7 +1293,7 @@ Respond *only* with the valid JSON array.`;
         
         async function initializeFirebase() {
             // Get config from either environment (Canvas) or local const
-            const firebaseConfig = (typeof __firebase_config !== 'undefined') 
+            const firebaseConfig = (typeof __firebase_config !== 'undefined' && false) // <-- ADDED '&& false' TO BYPASS
                 ? JSON.parse(__firebase_config) 
                 : YOUR_FIREBASE_CONFIG_JSON;
 
@@ -1387,19 +1387,29 @@ Respond *only* with the valid JSON array.`;
                         updateAuthUI(user);
 
                     } else {
-                        // User is signed out, sign in anonymously
+                        // User is signed out (or first load with no user)
+                        // Sign in anonymously or with custom token
                         currentUserId = null;
                         updateAuthUI(null);
-                        updateInspirationSection(null);
+                        updateInspirationSection(null); // Clear inspiration for signed-out state
                         try {
-                            await signInAnonymously(auth);
+                            if (initialAuthToken) {
+                                await signInWithCustomToken(auth, initialAuthToken);
+                            } else {
+                                // No token, sign in anonymously (for local dev)
+                                await signInAnonymously(auth);
+                            }
                         } catch (e) {
-                            console.error("Anonymous sign-in failed after sign-out:", e);
+                            console.error("Initial sign-in failed:", e);
                         }
                     }
                 });
 
                 // --- Initial Sign In ---
+                // We no longer need this block.
+                // The onAuthStateChanged listener above is guaranteed to fire on page load
+                // and will handle all auth states (initial load, sign-in, sign-out).
+                /*
                 const currentUser = auth.currentUser;
                 if (!currentUser) {
                     if (initialAuthToken) {
@@ -1421,6 +1431,7 @@ Respond *only* with the valid JSON array.`;
                     }
                 }
                 // The onAuthStateChanged listener will handle the rest.
+                */
 
             } catch (e) {
                 console.error("Firebase initialization failed:", e);
